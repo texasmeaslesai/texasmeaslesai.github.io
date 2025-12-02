@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizing Vaccine Distribution During a Texas Measles Outbreak: A Reinforcement Learning Approach</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.65;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .header .meta {
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1e3a8a;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: #2563eb;
+        }
+
+        .text-content {
+            max-width: 800px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .text-content p {
+            margin-bottom: 1.2rem;
+        }
+
+        .abstract {
+            background: #f8fafc;
+            padding: 2rem;
+            border-left: 4px solid #3b82f6;
+            margin: 2rem 0;
+            font-style: italic;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-wrapper {
+            background: white;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+        }
+
+        .chart-caption {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #64748b;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th {
+            background: #f1f5f9;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a8a;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .highlight-row {
+            background: #eff6ff !important;
+            font-weight: 600;
+        }
+
+        .methodology-box {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin: 2rem 0;
+        }
+
+        .methodology-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1e3a8a;
+        }
+
+        .methodology-box ul {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .key-finding {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+
+        .key-finding h3 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .two-column { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        .equation {
+            background: #f8fafc;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>AI-Driven Vaccine Allocation for the 2025 Texas Measles Outbreak</h1>
+        <p class="subtitle">Comparing reinforcement learning against heuristic strategies using multi-county SEIR modeling</p>
+        <p class="meta">Matthew Kim | BIO 176: Disease Ecology | December 2025</p>
+    </div>
+
+    <div class="container">
+        <!-- Abstract -->
+        <div class="section">
+            <div class="abstract">
+                <strong>Abstract:</strong> I developed a multi-county SEIR (Susceptible-Exposed-Infectious-Recovered) model 
+                to evaluate vaccine allocation strategies during a simulated measles outbreak across 37 Texas counties. 
+                Model parameters were fitted to observed outbreak data using Poisson deviance minimization (Pseudo-R² = 0.659, 
+                RMSE = 2.71 cases/day). I compared four strategies: reinforcement learning (RL), uniform distribution, 
+                high-risk targeting, and no vaccination. For baseline simulations, the RL strategy reduced peak infections by 96.4% compared to no vaccination, 93.9% compared to uniform distribution, and 39.7% compared to high-risk targeting, while maintaining comparable total case counts.
+                Additional experiments on varying vaccine hesitancy, total vaccine budget, and daily vaccine supply showed reduction in peak infections by RL but also limitations in the strategy's effectiveness.
+                Overall, the results show that AI is not a catch-all solution, depending on the priorities of the vaccination program.
+            </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="section">
+            <h2 class="section-title">1. Introduction</h2>
+            <div class="text-content">
+                <p>
+                    Measles remains one of the most contagious infectious diseases, with basic reproduction numbers 
+                    (R₀) ranging from 12-18 in unvaccinated populations. During outbreak responses, public health 
+                    authorities must allocate limited vaccine resources across heterogeneous populations while 
+                    accounting for spatial transmission dynamics, vaccine hesitancy, and logistical constraints.
+                </p>
+                <p>
+                    Traditional allocation strategies include uniform distribution (equal allocation per capita) and high-risk targeting (prioritizing areas with 
+                    active transmission). However, these static approaches may not adapt to rapidly evolving outbreak 
+                    dynamics. I propose a reinforcement learning (RL) framework that dynamically optimizes vaccine 
+                    allocation based on real-time epidemic surveillance.
+                </p>
+            </div>
+
+            <h3 class="section-subtitle">Study Context: Texas Outbreak Data</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">762</div>
+                    <div class="stat-label">Total Observed Cases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">37</div>
+                    <div class="stat-label">Counties Affected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">164</div>
+                    <div class="stat-label">Days of Outbreak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">414</div>
+                    <div class="stat-label">Cases in Highest-Burden County (Gaines)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Methods -->
+        <div class="section">
+            <h2 class="section-title">2. Methods</h2>
+            
+            <h3 class="section-subtitle">2.1 Model Structure</h3>
+            <div class="text-content">
+                <p>
+                    I implemented a multi-county SEIR model with the following compartments:
+                </p>
+            </div>
+            
+            <div class="methodology-box">
+                <h3>SEIR Differential Equations</h3>
+                <div class="equation">
+                    dS/dt = -βSI/N - ν(t)<br>
+                    dE/dt = βSI/N - σE<br>
+                    dI/dt = σE - γI<br>
+                    dR/dt = γI + ν(t)
+                </div>
+                <ul>
+                    <li><strong>β</strong>: Transmission rate (fitted parameter)</li>
+                    <li><strong>σ</strong>: Progression rate from exposed to infectious (1/8 day⁻¹)</li>
+                    <li><strong>γ</strong>: Recovery rate (1/7 day⁻¹)</li>
+                    <li><strong>ν(t)</strong>: Vaccination rate (time-dependent, strategy-specific)</li>
+                    <li><strong>N</strong>: Total county population</li>
+                </ul>
+            </div>
+
+            <h3 class="section-subtitle">2.2 Parameter Estimation</h3>
+            <div class="text-content">
+                <p>
+                    Model parameters were estimated by fitting to observed daily case counts using Poisson deviance 
+                    as the objective function, appropriate for count data. I employed a grid search over initial 
+                    conditions combined with Nelder-Mead optimization.
+                </p>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="validationChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 1: Model validation showing observed (points) versus fitted (lines) daily incidence and cumulative cases. 
+                    Click legend items to toggle between views. Poisson Deviance = 275.74, Pseudo-R² = 0.659, RMSE = 2.71 cases/day.
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2.00</div>
+                    <div class="stat-label">β (Transmission Rate)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">14.0</div>
+                    <div class="stat-label">R₀ (Basic Reprod. Number)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0.659</div>
+                    <div class="stat-label">Pseudo-R²</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1.48</div>
+                    <div class="stat-label">Dispersion (φ)</div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">2.3 Vaccination Strategies</h3>
+            <div class="text-content">
+                <p>I evaluated four vaccine allocation strategies:</p>
+            </div>
+
+            <div class="methodology-box">
+                <h3>Strategy Definitions</h3>
+                <ul>
+                    <li><strong>Reinforcement Learning (RL):</strong> Q-learning agent with state space defined by 
+                    top-3 highest-risk counties and budget status. Action space spans all possible allocations. 
+                    Reward function: R = (I_prev - I_current) × 100 - I_current + BudgetBonus, with ε-greedy exploration 
+                    (ε: 0.5 → 0.05, decay = 0.995).</li>
+                    
+                    <li><strong>Uniform Distribution:</strong> Vaccines allocated equally across all counties: 
+                    v_i = V_daily / n_counties.</li>
+                    
+                    <li><strong>High-Risk Targeting:</strong> Prioritizes counties by current infectious prevalence, 
+                    allocating up to 50% of susceptible population per county until supply exhausted.</li>
+                    
+                    <li><strong>No Vaccination (Control):</strong> Natural epidemic progression without intervention.</li>
+                </ul>
+            </div>
+
+            <h3 class="section-subtitle">2.4 Model Assumptions</h3>
+            <div class="methodology-box">
+                <ul>
+                    <li>Vaccine hesitancy: 15% baseline (random variation of 30%)</li>
+                    <li>Inter-county mobility: 0.2% daily mixing between counties with >10 cases</li>
+                    <li>Daily vaccine supply: 5,000 doses</li>
+                    <li>Simulation duration: 180 days</li>
+                    <li>Immediate vaccine effectiveness (single-dose)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="section">
+            <h2 class="section-title">3. Results</h2>
+
+            <h3 class="section-subtitle">3.1 Baseline Strategy Comparison</h3>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Peak Infections</th>
+                        <th>Days to Peak</th>
+                        <th>Total Cases</th>
+                        <th>Vaccines Used</th>
+                        <th>Vaccine Efficiency (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="highlight-row">
+                        <td><strong>RL</strong></td>
+                        <td>432</td>
+                        <td>15</td>
+                        <td>42,625</td>
+                        <td>908,310</td>
+                        <td>4.5%</td>
+                    </tr>
+                    <tr>
+                        <td>High Risk</td>
+                        <td>717</td>
+                        <td>15</td>
+                        <td>42,640</td>
+                        <td>47,706</td>
+                        <td>84.6%</td>
+                    </tr>
+                    <tr>
+                        <td>Uniform</td>
+                        <td>7,114</td>
+                        <td>27</td>
+                        <td>42,555</td>
+                        <td>899,100</td>
+                        <td>2.2%</td>
+                    </tr>
+                    <tr>
+                        <td>No Vaccine</td>
+                        <td>13,414</td>
+                        <td>26</td>
+                        <td>42,567</td>
+                        <td>0</td>
+                        <td>—</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-finding">
+                <h3>Key Finding</h3>
+                <p>
+                    The RL strategy achieved a 96.4% reduction in peak infections compared to no vaccination, 
+                    93.9% compared to uniform distribution, and 39.7% compared to high-risk targeting, despite similar total case counts and low vaccine efficiency. This dramatic 
+                    reduction in peak burden is critical for preventing healthcare system overwhelm.
+                </p>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="peakComparisonChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 2: Peak infection comparison across vaccination strategies.
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">3.2 SEIR Dynamics by Strategy</h3>
+            <div class="text-content">
+                <p>
+                    Full SEIR dynamics reveal distinct epidemic trajectories under each strategy. The RL approach 
+                    achieves rapid susceptible depletion through targeted allocation, while uniform distribution 
+                    shows delayed but substantial peak infections. High-risk targeting mirrors the dynamics of RL.
+                </p>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-wrapper">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="seirRL"></canvas>
+                    </div>
+                    <div class="chart-caption">Figure 3A: RL Strategy SEIR dynamics</div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="seirUniform"></canvas>
+                    </div>
+                    <div class="chart-caption">Figure 3B: Uniform Strategy SEIR dynamics</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-wrapper">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="seirHighRisk"></canvas>
+                    </div>
+                    <div class="chart-caption">Figure 3C: High Risk Strategy SEIR dynamics</div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="seirNoVaccine"></canvas>
+                    </div>
+                    <div class="chart-caption">Figure 3D: No Vaccination SEIR dynamics</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensitivity Analyses -->
+        <div class="section">
+            <h2 class="section-title">4. Sensitivity Analyses</h2>
+
+            <h3 class="section-subtitle">4.1 Vaccine Hesitancy</h3>
+            <div class="text-content">
+                <p>
+                    I varied population-level vaccine hesitancy from 0% to 50% to assess strategy robustness. 
+                    All strategies degraded with increasing hesitancy, but RL maintained lowest peak infections 
+                    across all levels. At 50% hesitancy, RL peak infections increased to 1,951.
+                </p>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="hesitancyInfectionsChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 4: Active infection trajectories under varying vaccine hesitancy levels (RL strategy only). 
+                    Hesitancy directly reduces effective vaccination rate by this formula: ν_eff = ν(t) × (1 - h).
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">4.2 Total Vaccine Budget Constraints</h3>
+            <div class="text-content">
+                <p>
+                    Real-world vaccine programs face budget limitations. I tested total vaccine budgets from 
+                    200,000 to 1,200,000 doses. The RL strategy performed worse with lower budgets and had
+                    diminishing returns for larger budgets.
+                </p>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="budgetPeakChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 5: Peak infections as a function of total vaccine budget. RL shows nonlinear improvement 
+                    with increasing budget while the uniform distribution shows marginal benefit. High-risk remains
+                    low throughout.
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="budgetInfectionsChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 6: Active infection trajectories under budget constraints (RL strategy).
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">4.3 Daily Vaccine Supply</h3>
+            <div class="text-content">
+                <p>
+                    I varied daily vaccine availability from 0 to 10,000 doses/day. Results demonstrate diminishing 
+                    returns above 5,000 doses/day for the RL strategy, suggesting an optimal supply rate exists 
+                    for this outbreak scenario.
+                </p>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="supplyInfectionsChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    Figure 7: Active infection trajectories under varying daily vaccine supply rates (RL strategy). 
+                </div>
+            </div>
+        </div>
+
+        <!-- Discussion -->
+        <div class="section">
+            <h2 class="section-title">5. Discussion</h2>
+            
+            <h3 class="section-subtitle">5.1 Principal Findings</h3>
+            <div class="text-content">
+                <p>
+                    This study demonstrates that reinforcement learning can substantially improve vaccine allocation 
+                    during outbreak responses. The RL strategy's 96.4% reduction in peak infections compared to no 
+                    intervention, and 93.9% compared to uniform distribution, has profound implications for healthcare 
+                    capacity planning during epidemics.
+                </p>
+                <p>
+                    Critically, while total case counts remained similar across strategies (~42,600), the temporal 
+                    distribution differed dramatically. Flattening the epidemic curve, even without reducing total 
+                    cases, prevents healthcare system collapse and reduces mortality. It is also important to note
+                    the competitive performance by high-risk targeting, showing how depending on the limitations
+                    and priorities of the vaccination program, standard heuristic strategies may suffice.
+                </p>
+            </div>
+
+            <h3 class="section-subtitle">5.2 Mechanism of RL Advantage</h3>
+            <div class="text-content">
+                <p>
+                    The RL agent's performance stems from three factors:
+                </p>
+            </div>
+            <div class="methodology-box">
+                <ul>
+                    <li><strong>Dynamic Adaptation:</strong> RL continuously updates allocation based on current 
+                    epidemic state, while traditional strategies remain static.</li>
+                    
+                    <li><strong>Multi-County Coordination:</strong> RL implicitly learns inter-county transmission 
+                    patterns through experience, allocating vaccines to prevent spillover.</li>
+                    
+                    <li><strong>Resource Optimization:</strong> Under constraints, RL can prioritize 
+                    highest-impact allocations through learned Q-values.</li>
+                </ul>
+            </div>
+
+            <h3 class="section-subtitle">5.3 Limitations</h3>
+            <div class="text-content">
+                <p>
+                    Several limitations warrant consideration:
+                </p>
+            </div>
+            <div class="methodology-box">
+                <ul>
+                    <li>Model assumes homogeneous mixing within counties while real-world transmission networks 
+                    are more complex.</li>
+                    
+                    <li>Vaccine hesitancy modeled as constant proportion whereas actual hesitancy varies by demographics, 
+                    messaging, and trust.</li>
+                    
+                    <li>RL agent trained and tested on same outbreak scenario with generalization to other pathogens 
+                    or geographic contexts requiring validation.</li>
+                    
+                    <li>Computational cost of RL training may limit real-time deployment during actual outbreaks.</li>
+                    
+                    <li>Model excludes age structure, second-dose requirements, and other factors.</li>
+                </ul>
+            </div>
+
+            <h3 class="section-subtitle">5.4 Public Health Implications</h3>
+            <div class="text-content">
+                <p>
+                    The high-risk targeting strategy achieved 84.6% vaccine efficiency (effective vaccines / 
+                    total used) compared to RL's 4.6%, yet had higher peak infections. This paradox highlights 
+                    that <em>peak suppression</em> and <em>vaccine efficiency</em> represent different objectives. 
+                    When hospital capacity is the limiting factor, RL's approach is preferable despite lower 
+                    technical efficiency.
+                </p>
+                <p>
+                    The RL framework could be integrated into real-time epidemic surveillance systems, providing 
+                    decision support for resource allocation. However, ethical considerations around algorithmic 
+                    decision-making in public health require careful deliberation.
+                </p>
+            </div>
+        </div>
+
+        <!-- Conclusions -->
+        <div class="section">
+            <h2 class="section-title">6. Conclusions</h2>
+            <div class="text-content">
+                <p>
+                    Reinforcement learning offers a promising approach to vaccine allocation during outbreak 
+                    responses, achieving dramatic reductions in peak infections compared to traditional strategies. 
+                    The method did tend to result in the lowest peak infections, but the performance by high-risk targeting
+                    should heuristic strategies are still valuable. AI is not a catch-all solution. The optimal allocation
+                    depends on the priorities of the vaccination program and the limitations at play.
+                </p>
+                <p>
+                    Future work should build upon these findings using additional outbreak data, demographic 
+                    heterogeneity, and other RL algorithms suitable for real-time 
+                    deployment. As disease ecology advances, AI-driven resource allocation may become 
+                    a critical component of pandemic preparedness and response.
+                </p>
+            </div>
+
+            <div class="key-finding">
+                <h3>Summary</h3>
+                <p>
+                    <strong>Primary Outcome:</strong> RL reduced peak infections by 96.4% vs. no vaccination<br>
+                    <strong>Model Fit:</strong> Pseudo-R² = 0.659, RMSE = 2.71 cases/day<br>
+                    <strong>Robustness:</strong>Generally achieved lowest peak infections for all experiments and simultations<br>
+                    <strong>Trade-off:</strong> Lower vaccine efficiency (4.6%) than high-risk targeting (85.5%), 
+                    but lower peak infections
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <h3>About This Research</h3>
+            <p style="max-width: 800px; margin: 1rem auto;">
+                This analysis was conducted as part of my final project for BIO 176: Disease Ecology.
+            </p>
+            <p style="margin-top: 2rem; opacity: 0.7; font-size: 0.9rem;">
+                © 2025 | Matthew Kim
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Actual observed data from epi curve
+        const observedDaily = [2,0,2,3,2,0,1,2,0,1,4,5,7,6,5,5,2,2,2,5,5,7,10,10,3,10,5,5,0,7,10,16,7,11,12,7,7,5,12,7,7,15,8,8,15,9,13,8,7,8,9,4,13,8,9,14,12,11,17,17,3,7,13,9,10,16,5,8,7,12,12,13,8,4,4,14,11,4,6,9,11,6,7,10,3,2,7,8,6,11,6,7,1,2,2,5,4,1,4,4,4,7,1,0,0,1,1,2,2,0,1,2,3,0,0,2,1,1,0,0,1,8,0,0,1,0,0,2,1,0,0,0,0,0,1,2,1,0,0,0,0,1,0,0,0,0,1,2,0,0,0,0,1,0,0,1,0,1,2,1,0,0,0,1];
+
+        const predictedDaily = [
+0.8003492771480745, 1.8638893562227985, 2.642963402169291, 3.226599454080145,
+3.675877694294832, 4.032836653729656, 4.326467748680302, 4.576785559548762,
+4.797608968765688, 4.99847005898919, 5.185928617768218, 5.364479500971283,
+5.5371800835337295, 5.706084754592048, 5.872546144547135, 6.037424181755878,
+6.201231341730452, 6.364233696807107, 6.526521339716511, 6.688057586944892,
+6.848713485298777, 7.008292149034883, 7.166546071284262, 7.32318959348493,
+7.477908049813644, 7.630364640093135, 7.780205762018376, 7.9270653086387926,
+8.070568279955587, 8.210333947525672, 8.345978733745927, 8.477118913070832,
+8.60337320389782, 8.724365292463336, 8.839726310526414, 8.949097274594337,
+9.052131484393476, 9.14849687112507, 9.237878281026108, 9.319979676367966,
+9.394526233917153, 9.46126631980764, 9.519973319557879, 9.570447302478666,
+9.61251650085976, 9.646038586009132, 9.670901725372872, 9.687025407513394,
+9.694361024595795, 9.69289220515351, 9.682634893199058, 9.663637173137225,
+9.635978843350014, 9.599770744679791, 9.55515385326733, 9.50229815023751,
+9.441401283506433, 9.372687039456544, 9.296403644347176, 9.212821917062906,
+9.122233296127952, 9.024947764819185, 8.921291698691585, 8.811605659896735,
+8.696242162345271, 8.575563431064639, 8.449939178067856, 8.31974441571653,
+8.185357326976181, 8.047157210170457, 7.9055225138910235, 7.760828975659806,
+7.613447875816259, 7.463744415958637, 7.312076229145686, 7.158792027000283,
+7.004230386881542, 6.8487186804336915, 6.692572143100729, 6.536093082632092,
+6.37957022320842, 6.22327818059489, 6.067477062685596, 5.9124121889348515,
+5.7583139214758345, 5.605397600196319, 5.453863573665837, 5.303897317577032,
+5.155669632263513, 5.0093369108736185, 4.865041469900112, 4.722911933975838,
+4.58306366713086, 4.445599243054251, 4.310608947300637, 4.17817130481617,
+4.048353626619691, 3.921212569952837, 3.7967947066987646, 3.675137095355487,
+3.5562678523298867, 3.4402067187867313, 3.3269656197388553, 3.2165492124964965,
+3.108955422002656, 3.0041759609652883, 2.9021968330546963, 2.8029988177648875,
+2.7065579358405936, 2.6128458944472643, 2.5218305115101685, 2.433476118871556,
+2.3477439441127075, 2.2645924710618623, 2.183977779160795, 2.1058538619937144,
+2.0301729253936234, 1.9568856656348845, 1.8859415282979646, 1.8172889484547048,
+1.7508755728714074, 1.6866484649639526, 1.624554293265378, 1.5645395041831098,
+1.5065504798315228, 1.450533681726764, 1.396435781125865, 1.344203776781947,
+1.2937851008726728, 1.2451277138407573, 1.1981801888639878, 1.1528917866484643,
+1.1092125212131498, 1.0670932173068435, 1.0264855600707374, 0.9873421375311799,
+0.9496164764784546, 0.9132630722585634, 0.8782374129764052, 0.8444959985805659,
+0.811996355272338, 0.7806970456547011, 0.7505576750109223, 0.7215388940772617,
+0.6936023986500531, 0.6667109263442194, 0.6408282507981011, 0.615919173598352,
+0.5919495141785724, 0.5688860979263304, 0.546696742715225, 0.5253502440616772,
+0.5048163590901518, 0.48506578947549667, 0.46607016351700997, 0.44780201748565385,
+0.43023477637351804, 0.41334273416313544, 0.39710103372354416, 0.381485646430026,
+0.3664733515952008, 0.35204171579057353, 0.33816907212968783
+];
+        const highRiskS = [
+42465.0, 38123.49997439837, 33798.72362576949, 29462.02118381862, 25101.32505055822,
+20686.78135330207, 16200.397743731077, 11695.45032977041, 7199.61160761791, 3903.0947511489794,
+2103.1329461340592, 1133.721430004247, 613.201809384764, 335.15830225455665, 187.85351104212913,
+108.467617600206, 65.62325898636946, 42.85228526374348, 31.48644858455256, 24.2460105624811,
+20.88437108209867, 19.54489676750123, 18.43716096653088, 17.511669297757493, 16.731757323365102,
+16.069699279758375, 15.50415046734124, 15.018421841222777, 14.59928677135673, 14.23613707103036,
+13.920374052524345, 13.644961398957207, 13.404091754053145, 13.192934692850354, 13.00744387374926,
+12.844207843986828, 12.70033345490392, 12.57335391543334, 12.46115565320046, 12.361919667801192,
+12.2740741479976, 12.196255914373433, 12.127278829212637, 12.066107745960885, 12.01183689315288,
+11.96367183131222, 11.920914306794232, 11.882949468747102, 11.849235025133266, 11.819291999008277,
+11.792696812860353, 11.769074481135542, 11.748092732390312, 11.729456915303007, 11.712905568923256,
+11.698206558488025, 11.685153694994364, 11.673563770352908, 11.663273951019509, 11.654139482038588,
+11.646031660838611, 11.638836046220472, 11.63245087302788, 11.626785647186509, 11.621759899306124,
+11.617302077985457, 11.613348566444666, 11.609842808218174, 11.60673452943598, 11.603979046759273,
+11.60153665135778, 11.599372060458371, 11.597453928984429, 11.595754414667509, 11.59424879076619,
+11.59291510118662, 11.591733853380108, 11.590687744904136, 11.589761419985273, 11.588941252822558,
+11.588215154724429, 11.587572402487908, 11.587003485708491, 11.586499970959249, 11.586054380999702,
+11.58566008737343, 11.58531121493058, 11.585002556968856, 11.584729499828352, 11.584487955900755,
+11.58427430412665, 11.584085337154596, 11.583918214425813, 11.583770420528136, 11.58363972823472,
+11.583524165706628, 11.583421987395802, 11.583331648235342, 11.583251780749924, 11.583181174759286,
+11.583118759384089, 11.58306358709541, 11.58301481957811, 11.582971715203495, 11.58293361792981,
+11.582899947469109, 11.582870190577246, 11.58284389333963, 11.58282065433982, 11.582800118610612,
+11.58278197227862, 11.582765937823346, 11.582751769880732, 11.582739251528976, 11.58272819100154,
+11.58271841877853, 11.58270978501305, 11.582702157254191, 11.582695418432689, 11.58268946507896,
+11.582684205746936, 11.58267955962007, 11.582675455278332, 11.582671829607978, 11.582668626837355,
+11.5826657976844, 11.582663298602863, 11.582661091115847, 11.58265914122665, 11.582657418897885,
+11.58265589759107, 11.582654553859642, 11.5826533669892, 11.582652318679523, 11.58265139276362,
+11.582650574959274, 11.582649852649617, 11.582649214689113, 11.582648651232166,
+11.582648153581662, 11.5826477140551, 11.582647325866342, 11.582646983021112,
+11.582646680224665, 11.582646412800214, 11.582646176616874, 11.582645968025956,
+11.582645783804749, 11.582645621106767, 11.58264547741792, 11.582645350517652,
+11.58264523844475, 11.58264513946702, 11.582645052054575, 11.58264497485623,
+11.582644906678606, 11.58264484646773, 11.582644793292753, 11.582644746331567,
+11.582644704858104, 11.582644668231127, 11.582644635884307, 11.58264460731749,
+11.582644582088973, 11.582644559808635, 11.582644540131962, 11.5826445227547,
+11.582644507408128, 11.58264449385494, 11.582644481885556, 11.582644471314888,
+11.58264446197948, 11.58264445373498, 11.582644446453893, 11.58264444002364,
+11.58264443434478, 11.58264442932951, 11.582644424900284, 11.582644420988606,
+11.582644417534016, 11.582644414483076
+];
+        const highRiskE = [
+39.0, 160.0953493708623, 249.33010309765865, 339.33660593058397,
+442.0859872189108, 562.934847614428, 703.8724256929628,
+863.8432985725739, 1037.768551367548, 1182.056666504021,
+1204.8612432808868, 1156.6798181895583, 1071.463857379807,
+971.5939533326808, 869.459179823403, 771.9127902046384,
+682.0461885846785, 600.9666959852816, 528.7490322211071,
+464.8161741127791, 408.37155024357406, 358.6645807777248,
+314.9392439814796, 276.4973301525679, 242.71507585788936,
+213.03774941925985, 186.9735795542696, 164.0876107361043,
+143.9957944639573, 126.35946985628904, 110.88029914275891,
+97.2956744034812, 85.37458474795011, 74.91391871565914,
+65.73516969530283, 57.681509513152406, 50.615195213091255,
+44.415275350925434, 38.97556419429264, 34.20285465540533,
+30.015343343283256, 26.34124365899701, 23.117565286783183,
+20.289040709187027, 17.80718147334666, 15.629448851018983,
+13.718525269159608, 12.041674448561778, 10.570179586105398,
+9.278850163967212, 8.145589079619233, 7.151012776391645,
+6.278117928087916, 5.511989004164234, 4.839541725023451,
+4.249298019830757, 3.7311886308455664, 3.2763799766313264,
+2.8771222988858134, 2.5266164805060054, 2.2188972416427317,
+1.9487307010555313, 1.7115245366161798, 1.503249195380532,
+1.3203687938383473, 1.1597805159292258, 1.0187614629788586,
+0.8949220383329946, 0.7861650623235619, 0.6906499122098272,
+0.6067610685850929, 0.5330805259113608, 0.4683635916463879,
+0.4115176570075025, 0.3615835737828856, 0.3177193166395944,
+0.279185649866157, 0.2453335521088642, 0.2155931830141135,
+0.1894642023000691, 0.1665072751106864, 0.1463366179583754,
+0.1286134574929958, 0.1130402900556079, 0.0993558437582077,
+0.0873306569146957, 0.0767631972432173, 0.0674764555495353,
+0.0593149557463493, 0.052142130205648, 0.0458380157040492,
+0.0402972307130969, 0.035427199602745, 0.0311465935500775,
+0.0273839616497411, 0.0240765289716097, 0.021169141160984,
+0.0186133376763193, 0.0163665379521993, 0.0143913266988108,
+0.0126548262366624, 0.0111281452457551, 0.0097858946073349,
+0.0086057621560323, 0.0075681391602148, 0.0066557922258863,
+0.0058535750895131, 0.0051481754409396, 0.004527892510632,
+0.0039824416760109, 0.0035027827985054, 0.0030809694039657,
+0.0027100161710829, 0.0023837825014557, 0.0020968702162069,
+0.0018445336621901, 0.0016226007199006, 0.0014274033887676,
+0.0012557167866744, 0.0011047055420737, 0.0009718766813286,
+0.000855038223033, 0.0007522627868904, 0.0006618556088868,
+0.0005823264284002, 0.0005123647778017, 0.000450818262113,
+0.0003966734663627, 0.0003490391722674, 0.0003071316045002,
+0.0002702614607496, 0.0002378225095845, 0.0002092815663357,
+0.0001841696802127, 0.000162074386092, 0.0001426328921743,
+0.0001255260903132, 0.0001104732895308, 9.722758528333076e-05,
+8.557178762667342e-05, 7.531484073532195e-05, 6.628867440254058e-05,
+5.8345435334666486e-05, 5.13550523654189e-05, 4.5203095264972926e-05,
+3.97888916950402e-05, 3.502387114714574e-05, 3.083010846829566e-05,
+2.7139042889222713e-05, 2.3890351380663244e-05, 2.1030957721232083e-05,
+1.8514160909096004e-05, 1.6298868526298826e-05, 1.4348922402205954e-05,
+1.2632505450063498e-05, 1.1121619893542638e-05, 9.791628280718013e-06,
+8.620849720851563e-06, 7.590204691882209e-06, 6.682902568827509e-06,
+5.884166728717875e-06, 5.180992707923887e-06, 4.5619354331013886e-06,
+4.016922026518297e-06, 3.5370871081970243e-06, 3.1146278880998243e-06,
+2.742676667647855e-06, 2.4151886566011623e-06, 2.126843263485542e-06,
+1.8729572395085864e-06, 1.6494082509311851e-06, 1.4525676263791956e-06,
+1.2792411764293155e-06, 1.1266171154774588e-06, 9.922202325895245e-07,
+8.738715606712491e-07, 7.69652883570632e-07, 6.778755001335338e-07,
+5.970527340808396e-07, 5.258757400161628e-07, 4.631922099196445e-07
+];
+        const highRiskI = [
+63.0, 58.87499999999996, 70.4762043856435, 91.57443807490174, 120.90945123409593,
+158.89742088873177, 206.56464528500217, 265.039463455908, 335.1570952837785,
+416.9985791641823, 505.1844368823017, 583.6228870235122, 644.8331661509911,
+686.647124587611, 710.0039223845376, 717.2571880932433, 711.2809742840741,
+694.925180102291, 670.7709913715526, 641.0401930603979, 607.5650443872954,
+571.8164818266999, 534.9614855915299, 497.9058217189961, 461.3385848853535,
+425.7724572411106, 391.57753916978805, 359.0095881612449, 328.2334554802229,
+299.34243614818575, 272.3741647161954, 247.32360714958375, 224.1536225715069,
+202.80349958335685, 183.19581091090615, 165.24187699268953, 148.8460832543065,
+133.90925647675627, 120.33127211322818, 108.01303590705362, 96.8579590379716,
+86.7730256647432, 77.66953459858308, 69.46358245963343, 62.076343625477016,
+55.43419222029147, 49.468703009484365, 44.11656109534584, 39.31940453065236,
+35.023619188822344, 31.180101289486498, 27.743999740226535, 24.67444780295742,
+21.93429142926021, 19.489819850600703, 17.310502587571392, 15.36873589896861,
+13.639600777971644, 12.100633878197469, 10.731612182958555, 9.514351788313446,
+8.432520830902577, 7.471466335548437, 6.618054568975684, 5.8605243514017245,
+5.1883526861455564, 4.592132009758774, 4.063458334094163, 3.59482954115805,
+3.179553096640203, 2.811662464717829, 2.4858415319027056, 2.197356378798382,
+1.941993773640126, 1.7160057988174748, 1.5160600599949816, 1.339194966004219,
+1.1827796056654576, 1.044477784584, 0.922215820377336, 0.8141537284680823,
+0.7186594623614775, 0.6342859021260637, 0.5597503125803934, 0.4939160184687168,
+0.435776067728676, 0.3844386758817736, 0.3391142646969223, 0.2991039266839111,
+0.2637891637687888, 0.2326227637918107, 0.2051206923559868, 0.1808548901442687,
+0.1594468772168591, 0.1405620760939246, 0.1239047747152959, 0.109213658734562,
+0.0962578501318904, 0.0848333958940174, 0.0747601565817541, 0.0658790500502834,
+0.05804961046554, 0.0511478271261823, 0.0450642315055017, 0.0397022044170769,
+0.0349764783239499, 0.0308118125916214, 0.0271418219647218, 0.0239079407570218,
+0.0210585072127049, 0.0185479542489627, 0.016336094348924, 0.0143874877602877,
+0.0126708843873463, 0.0111587308589788, 0.0098267352275791, 0.0086534826171273,
+0.0076200959046681, 0.0067099361990257, 0.0059083384832135, 0.0052023783212279,
+0.0045806660033614, 0.0040331649236175, 0.0035510313543192, 0.0031264731119558,
+0.0027526248995122, 0.0024234383682357, 0.0021335851698233, 0.0018783714717153,
+0.0016536625865751, 0.0014558165247697, 0.0012816254181106, 0.0011282638863643,
+0.0009932435269614, 0.0008743728045649, 0.0007697217021743, 0.0006775905705283,
+0.0005964826788848, 0.0005250800288069, 0.0004622220442806, 0.0004068867971224,
+0.0003581744669111, 0.0003152927702241, 0.0002775441253232, 0.0002443143461084,
+0.0002150626835725, 0.000189313054524, 0.0001666463163425, 0.0001466934632807,
+0.0001291296346018, 0.0001136688378669, 0.0001000593021725, 8.807938626155263e-05,
+7.753397536140391e-05, 6.825130846719338e-05, 6.008018472456653e-05,
+5.2887503679178433e-05, 4.655609954581413e-05, 4.098283439723284e-05,
+3.6076919355542e-05, 3.175843655442515e-05, 2.795703788773986e-05,
+2.461079942083894e-05, 2.1665212861285337e-05, 1.907229770584508e-05,
+1.6789819636391833e-05, 1.4780602460062622e-05, 1.3011922406366804e-05,
+1.145497493038955e-05, 1.008440534826959e-05, 8.87789566774108e-06,
+7.815800889430181e-06, 6.8808288585232695e-06, 6.057758454359323e-06,
+5.333191528885531e-06, 4.695334553832717e-06, 4.1338064197976634e-06,
+3.639469255987184e-06, 3.204279514077134e-06, 2.8211568895405065e-06,
+2.483868944251026e-06
+];
+        const highRiskR = [
+0.0, 4224.529676230742, 8448.470066747219, 12674.067772175906, 16902.679510988764,
+21158.38637819476, 25456.165185290945, 29742.666908201107, 33994.462745730765,
+37064.85000318283, 38753.821373702754, 39692.975864782675, 40237.50116708444,
+40573.60061982516, 40799.683386749944, 40969.362404101914, 41108.04957814488,
+41228.25583864869, 41335.99352782278, 41436.89762226435, 41530.17903428705,
+41616.97404062808, 41698.66210946048, 41775.0851788307, 41846.2145819334,
+41912.12009405988, 41972.944730808595, 42028.884379261435, 42080.17146328448,
+42127.06195692451, 42169.825162088535, 42208.73575704798, 42244.06770092651,
+42276.08964700815, 42305.06157552004, 42331.23240565017, 42354.8383880777,
+42376.10211425691, 42395.23200803929, 42412.42218976976, 42427.85262347075,
+42441.68947476189, 42454.085621285434, 42465.18126908522, 42475.10463800802,
+42483.972687097375, 42491.89185741455, 42498.958814987345, 42505.261180858106,
+42510.87823864823, 42515.88161281805, 42520.33591300225, 42524.29934153656,
+42527.82426265129, 42530.95773285545, 42533.74199283411, 42536.21492177519,
+42538.41045547504, 42540.358969871915, 42542.08763185451, 42543.62071930921,
+42544.97991242181, 42546.18455825482, 42547.25191058846, 42548.197346955465,
+42549.034564719936, 42549.775757960815, 42550.43177681936, 42551.01227086708,
+42551.525817944384, 42551.98003981536, 42552.381705881715, 42552.73682610056,
+42553.05073415467, 42553.32816183662, 42553.5733055222, 42553.78988553075,
+42553.98119909732, 42554.150167612424, 42554.29937872449, 42554.4311238417,
+42554.5474315172, 42554.65009715466, 42554.74070942642, 42554.820673756774,
+42554.891233187984, 42554.95348691194, 42555.00840672279, 42555.05685161774,
+42555.09958075014, 42555.137264916375, 42555.17049673979, 42555.19979969584,
+42555.22563610871, 42555.24841423403, 42555.26849453061, 42555.28619521271,
+42555.30179716397, 42555.31554828542, 42555.327667341975, 42555.33834736433,
+42555.3477586572, 42555.3560514587, 42555.36335829116, 42555.36979603851,
+42555.37546778198, 42555.380464421745, 42555.38486610926, 42555.38874351241,
+42555.39215893251, 42555.39516729067, 42555.39781699844, 42555.4001507262,
+42555.402206081584, 42555.40401620793, 42555.405610312344, 42555.407014131655,
+42555.40825034346, 42555.4093389286, 42555.410297490904, 42555.41114153927,
+42555.41188473615, 42555.412539117024, 42555.41311528344, 42555.41362257362,
+42555.41406921264, 42555.41446244477, 42555.414808650254, 42555.415113448136,
+42555.41538178694, 42555.41561802444, 42555.41582599822, 42555.41600908757,
+42555.41617026815, 42555.41631216007, 42555.41643707047, 42555.41654703071,
+42555.41664382936, 42555.41672904117, 42555.4168040526, 42555.416870084315,
+42555.41692821101, 42555.416979378795, 42555.417024420625, 42555.41706406979,
+42555.417098971826, 42555.41712969507, 42555.4171567398, 42555.4171805464,
+42555.41720150261, 42555.417219949704, 42555.4172361881, 42555.41725048229,
+42555.41726306506, 42555.41727414134, 42555.41728389154, 42555.41729247441,
+42555.41730002977, 42555.41730668065, 42555.41731253533, 42555.41731768917,
+42555.417322226094, 42555.41732621995, 42555.417329735785, 42555.41733283083,
+42555.417335555445, 42555.41733795397, 42555.41734006549, 42555.41734192434,
+42555.417343560766, 42555.4173450014, 42555.41734626968, 42555.41734738621,
+42555.41734836919, 42555.41734923457, 42555.417349996445, 42555.41735066724,
+42555.41735125777, 42555.41735177771, 42555.417352235454, 42555.41735263848
+];
+
+        const noVaccineS = total_S = [
+42465.0, 42339.02965062911, 42222.64497423292, 42084.85201467907,
+41906.358128696425, 41669.7889877876, 41355.85332968249,
+40941.66782634782, 40399.93537865845, 39698.42515668744,
+38799.352870005445, 37658.349805164275, 36223.23627745864,
+34434.02474955641, 32226.847324736904, 29544.561515880006,
+26355.42940022837, 22679.50775523534, 18619.388046316653,
+14384.727624113288, 10289.08947731363, 6693.406078937582,
+3892.9983982766744, 1999.2663646652773, 904.0895095781148,
+364.1544347438864, 134.17402094017973, 46.94612594239942,
+16.233082042885293, 5.742541549046013, 2.1314571354851073,
+0.843114442468989, 0.3581638933162541, 0.1637547226129008,
+0.080465484700779, 0.0423460520738145, 0.023758258257824,
+0.0141392262495735, 0.0088802053624285, 0.0058566074676678,
+0.004036917541352, 0.0028955491459354, 0.0021524730998835,
+0.001652231525513, 0.0013052034648137, 0.0010579043332821,
+0.00087738754003, 0.0007427600075086, 0.0006404149698713,
+0.0005612717990007, 0.000499132892298, 0.0004496800796795,
+0.0004098468775825, 0.0003774170754682, 0.0003507627416168,
+0.0003286699412975, 0.0003102207328586, 0.0002947119413051,
+0.0002815983811891, 0.0002704525955966, 0.0002609359206525,
+0.0002527774260527, 0.0002457584053733, 0.0002397008256298,
+0.0002344586344154, 0.0002299111521764, 0.0002259580017684,
+0.0002225151824842, 0.0002195120040254, 0.0002168886723189,
+0.0002145943735875, 0.0002125857423292, 0.0002108256273794,
+0.0002092820911337, 0.0002079275924548, 0.0002067383152881,
+0.000205693613643, 0.0002047755501136, 0.0002039685100676,
+0.0002032588774298, 0.0002026347609022, 0.0002020857617278,
+0.000201602775864, 0.0002011778248135, 0.000200803910442,
+0.0002004748899779, 0.0002001853680671, 0.0001999306033064,
+0.0001997064271198, 0.0001995091731938, 0.0001993356159817,
+0.0001991829170193, 0.0001990485779901, 0.0001989303996373,
+0.0001988264457547, 0.0001987350115955, 0.0001986545961359,
+0.000198583877703, 0.0001985216925482, 0.0001984670159989,
+0.0001984189458715, 0.0001983766878702, 0.0001983395427282,
+0.0001983068948836, 0.0001982782025028, 0.0001982529886913,
+0.0001982308337493, 0.0001982113683477, 0.0001981942675154,
+0.0001981792453407, 0.0001981660503032, 0.0001981544611595,
+0.0001981442833196, 0.0001981353456543, 0.0001981274976818,
+0.0001981206070911, 0.0001981145575595, 0.0001981092468316,
+0.0001981045850269, 0.0001981004931503, 0.0001980969017808,
+0.0001980937499166, 0.0001980909839599, 0.0001980885568219,
+0.0001980864271369, 0.0001980845585693, 0.0001980829192053,
+0.0001980814810171, 0.0001980802193915, 0.0001980791127162,
+0.0001980781420149, 0.0001980772906278, 0.0001980765439291,
+0.0001980758890804, 0.0001980753148128, 0.0001980748112355,
+0.0001980743696683, 0.0001980739824937, 0.0001980736430273,
+0.0001980733454039, 0.0001980730844774, 0.000198072855733,
+0.0001980726552098, 0.0001980724794332, 0.0001980723253555,
+0.0001980721903034, 0.000198072071932, 0.0001980719681849,
+0.0001980718772587, 0.0001980717975719, 0.0001980717277375,
+0.0001980716665396, 0.0001980716129117, 0.0001980715659191,
+0.0001980715247421, 0.000198071488662, 0.000198071457049,
+0.0001980714293507, 0.0001980714050832, 0.000198071383822,
+0.0001980713651953, 0.000198071348877, 0.0001980713345814,
+0.0001980713220582, 0.0001980713110879, 0.0001980713014781,
+0.0001980712930604, 0.0001980712856869, 0.0001980712792284,
+0.0001980712735714, 0.0001980712686166, 0.0001980712642769,
+0.0001980712604759, 0.000198071257147, 0.0001980712542315,
+0.0001980712516782, 0.000198071249442, 0.0001980712474837,
+0.0001980712457687, 0.0001980712442668, 0.0001980712429517
+];
+        const noVaccineE = [
+39.0, 160.0953493708623, 256.4681070957168, 362.2025532626072,
+495.42112008741447, 670.0626209853261, 900.2404514672505,
+1201.8958983685309, 1593.3913587618365, 2095.7276608876346,
+2732.8339899586513, 3532.2328060550176, 4525.817233003759,
+5749.301606780516, 7237.816330752465, 9015.375098265287,
+11077.58532663376, 13368.80880579757, 15757.82741399158,
+18022.759409446, 19865.55263006491, 20978.04194968284,
+21156.194386633382, 20405.402121915613, 18949.90371176332,
+17121.100822627133, 15210.94363360245, 13396.803574399924,
+11752.91617149945, 10294.292190555858, 9011.116751149935,
+7886.015499949207, 6900.748513004713, 6038.349358049823,
+5283.638977531511, 4623.222224772698, 4045.338034469926,
+3539.6803991931924, 3097.2256083149305, 2710.0754308734595,
+2371.317821704203, 2074.904235359573, 1815.5419490156728,
+1588.599705630288, 1390.0250894545627, 1216.2722005718742,
+1064.2383560171834, 931.2086961425678, 814.8077114697844,
+712.9568266792319, 623.8372854832345, 545.857674250643,
+477.62550480251474, 417.9223491320024, 365.682082144836,
+319.9718439695319, 279.97538192254876, 244.97847469102177,
+214.3561784682042, 187.5616673054641, 164.1164684089561,
+143.6019180163312, 125.65168528331051, 109.94523068047646,
+96.20208208760808, 84.17682637413935, 73.65472703052232,
+64.44788959452629, 56.39190639838901, 49.34292072192207,
+43.17505792598053, 37.77817769386424, 33.055907242246164,
+28.92392038050163, 25.30843168743762, 22.14487891578509,
+19.3767700960136, 16.95467475207542, 14.835341215106029,
+12.98092427285042, 11.35830936286064, 9.938521241502237,
+8.696206569300319, 7.609181173088833, 6.6580339003671005,
+5.825779991841676, 5.097557782383379, 4.460363314350217,
+3.902818124232627, 3.4149660559574757, 2.988095472520003,
+2.6145836911539635, 2.2877608640987477, 2.001790874264757,
+1.751567118935545, 1.5326213205027608, 1.3410437358553762,
+1.173413339591887, 1.0267367343280556, 0.8983946972135981,
+0.7860954081320257, 0.6878335243735233, 0.6018543709719756,
+0.5266226072483231, 0.4607948100346633, 0.4031954839941418,
+0.3527960706498162, 0.3086965812839907, 0.2701095257243242,
+0.2363458500309583, 0.2068026319721261, 0.180952314564754,
+0.1583332854219996, 0.138541633681915, 0.1212239373196481,
+0.1060709520452829, 0.0928120890891541, 0.0812105832637377,
+0.0710592650175752, 0.0621768609822548, 0.0544047569508425,
+0.0476041654838513, 0.0416536475643267, 0.0364469440459238,
+0.0318910781698684, 0.0279046952672024, 0.0244166099981661,
+0.0213645351865835, 0.0186939695498862, 0.0163572244628257,
+0.0143125723756737, 0.0125235016801017, 0.0109580647167876,
+0.0095883072820378, 0.0083897694460508, 0.0073410487688717,
+0.0064234181143299, 0.0056204912372133, 0.004917930172028,
+0.0043031891981479, 0.0037652908093059, 0.0032946296868871,
+0.0028828011765494, 0.0025224512052573, 0.0022071449586778,
+0.0019312519738952, 0.0016898455955297, 0.0014786149998356,
+0.0012937882157823, 0.0011320647684963, 0.0009905567422686,
+0.000866737210683, 0.0007583951129755, 0.0006635957708461,
+0.0005806463406674, 0.000508065584164, 0.0004445574177566,
+0.0003889877682352, 0.0003403643214734, 0.0002978188025504,
+0.0002605914708583, 0.0002280175533193, 0.0001995153734499,
+0.0001745759642919, 0.0001527539797257, 0.0001336597418698,
+0.0001169522825538, 0.000102333254608, 8.95416042405556e-05,
+7.834890936747618e-05, 6.855530065137505e-05, 5.998589240968999e-05,
+5.2487659659397806e-05, 4.592670553090532e-05, 4.0185870255039075e-05,
+3.516263902651716e-05, 3.0767311384360596e-05, 2.6921399419642308e-05,
+2.3556226207170236e-05, 2.0611699433124773e-05, 1.8035238319166948e-05
+];
+        const noVaccineI = [
+63.0, 58.87499999999996, 70.4762043856435, 92.466688574659,
+124.53248079324788, 168.66976640513937, 228.3319131132852,
+308.2431248162223, 414.4453799956856, 554.4128169843884,
+737.1769435975727, 973.4702003998945, 1275.9321296710716,
+1659.3832652721023, 2140.9912139379385, 2739.8623675765775,
+3475.375345205942, 4363.591318862884, 5411.322231178596,
+6608.004624902031, 7916.84889038249, 9269.064556228815,
+10567.167720477912, 11702.09663016738, 12581.043805382924,
+13152.489797155777, 13413.700286104771, 13398.825342290109,
+13159.30788304866, 12748.521278336282, 12214.09047667915,
+11595.610002475876, 10924.846225330111, 10226.7474715514,
+9520.577216800288, 8820.949629448825, 8138.716746195579,
+7481.710179619236, 6855.354489572785, 6263.1713349588945,
+5707.192001681091, 5188.293586296821, 4706.471817674362,
+4261.061444490699, 3850.9133441958143, 3474.536002635376,
+3130.207741616093, 2816.065001601654, 2530.171088390667,
+2270.569039697153, 2035.321637361036, 1822.5410641377205,
+1630.410264256519, 1457.197700320187, 1301.266893915947,
+1161.081883624631, 1035.209523603018, 922.3193715429052,
+821.1817706588679, 730.6646114446977, 649.7291610800669,
+577.4252680483196, 512.8861837934585, 455.32318962623543,
+404.0201735146897, 358.32826613068517, 317.6606171230691,
+281.4873698414459, 249.33087463484068, 220.76116655823355,
+195.3917221401548, 172.87550121802315, 152.90127325575284,
+135.19022262449744, 119.49282372570345, 105.5859742972469,
+93.27037354782762, 82.3681307315682, 72.7205892567822,
+64.18635130055873, 56.63948807744232, 49.9679213081653,
+44.071961990758055, 38.86299324181232, 34.262284711046625,
+30.19992684701443, 26.61387408213544, 23.44908679319973,
+20.65676266560783, 18.19364883605008, 16.02142690218047,
+14.1061635645054, 12.41782030239888, 10.929816081497092,
+9.618637643423462, 8.463492441372766, 7.445999757668077,
+6.549915973554557, 5.760890359067177, 5.066248113848586,
+4.454797720450491, 3.9166599721169217, 3.4431163095040525,
+3.0264743473749705, 2.6599486950845863, 2.3375553756125496,
+2.054018328881454, 1.8046866478724728, 1.5854613422654762,
+1.3927305555145204, 1.2233122788377444, 1.074403710857439,
+0.9435365057698276, 0.8285372370518883, 0.7274924788261435,
+0.6387179740159362, 0.560731418162177, 0.4922284409894389,
+0.4320614151846291, 0.379220763999736, 0.3328184767654128,
+0.2920735747034949, 0.2562992990027627, 0.2248918193764803,
+0.1973202846141522, 0.1731180572976497, 0.1518749931635286,
+0.1332306418185095, 0.1168682598856168, 0.1025095403814073,
+0.0899099733847738, 0.0788547630196225, 0.0691552345839748,
+0.0606456734472912, 0.0531805442222186, 0.0466320447998009,
+0.040887955210224, 0.0358497460159118, 0.031430915132576,
+0.0275555256708544, 0.024156920653358, 0.0211765933397558,
+0.0185631944306516, 0.0162716596590557, 0.0142624432512763,
+0.0125008444780716, 0.0109564160493697, 0.0096024444560438,
+0.0084154935515884, 0.0073750037140486, 0.0064629398509608,
+0.0056634823221786, 0.0049627555703456, 0.0043485898779896,
+0.0038103122239183, 0.0033385626987991, 0.0029251333684197,
+0.0025628268501508, 0.0022453321997301, 0.0019671159970956,
+0.0017233267764008, 0.0015097111707722, 0.0013225403405411,
+0.0011585454278593, 0.0010148609337016, 0.0008889750477814,
+0.0007786860801178, 0.0006820642468487, 0.0005974181541249,
+0.0005232654040657, 0.0004583068171558, 0.0004014038272864,
+0.0003515586599396, 0.0003078969516913, 0.0002696525110696,
+0.0002361539575558, 0.0002068130077833, 0.0001811142063087,
+0.0001586059231921, 0.0001388924624405, 0.000121627144521
+];
+        const noVaccineR = [
+0.0, 9.000000000000002, 17.410714285714278, 27.47874348366336, 40.688270422900366,
+58.47862482193578, 82.57430573695567, 115.19315046742494, 159.22788258402818,
+218.43436544055464, 297.6361964383244, 402.94718838083475, 542.014359866534,
+724.2903783909728, 961.3451305727012, 1267.2010182781214, 1658.6099279319185,
+2155.092120104196, 2778.46230851318, 3551.5083415386935, 4495.509002238982,
+5626.487415150765, 6950.639494612025, 8460.234883251727, 10131.962973275631,
+11929.254945473203, 13808.182059352594, 15724.42495736756, 17638.542863409017,
+19518.44398955882, 21339.66131503543, 23084.53138313245, 24741.047097771876,
+26301.73941567616, 27762.703340183503, 29122.7857997264, 30382.921461076236,
+31545.595281961327, 32614.41102190693, 33593.74737756018, 34488.486139697154,
+35303.79928279446, 36044.98408083688, 36717.33719764748, 37326.060261146165,
+37876.19073888842, 38372.553024979185, 38819.72555949577, 39222.020559724566,
+39583.47357235182, 39907.84057802283, 40198.600811931545, 40458.96382109409,
+40691.87957313074, 40900.05067317649, 41085.94594373588, 41251.814784253715,
+41399.701859054134, 41531.46176927457, 41648.77345079725, 41753.15410957504,
+41845.97256115792, 41928.46188516482, 42001.731339992475, 42066.777509939064,
+42124.494677584014, 42175.68442988841, 42221.06451804885, 42261.27699945479,
+42296.89569583118, 42328.433005339495, 42356.34610850238, 42381.04260867636,
+42402.88564771291, 42422.198536659256, 42439.26894004865, 42454.35265066256,
+42467.676989740816, 42479.44386555961, 42489.83252116771, 42499.00199992495,
+42507.09335536458, 42514.23162983717, 42520.52762440729, 42526.07948058467,
+42530.97409268626, 42535.28836795011, 42539.09034996184, 42542.44021950373,
+42545.391185598826, 42547.99027828968, 42550.27905356143, 42552.29421978492,
+42554.06819411382, 42555.6295964112, 42557.003687503115, 42558.212757851856,
+42559.27647210298, 42560.21217438491, 42561.03515872192, 42561.758908452466,
+42562.39530812683, 42562.95483097997, 42563.44670473849, 42563.87905821666,
+42564.25905088738, 42564.59298736962, 42564.88641855949, 42565.14423093774,
+42565.37072541521, 42565.56968692312, 42565.744445820106, 42565.89793206451,
+42566.032722993914, 42566.15108545633, 42566.25501295333, 42566.346258378195,
+42566.426362866485, 42566.4966812152, 42566.5584042745, 42566.61257866935,
+42566.66012416607, 42566.70184896242, 42566.73846314801, 42566.77059055078,
+42566.79877916288, 42566.8235103139, 42566.84520674149, 42566.86423969032,
+42566.880935156034, 42566.89557937607, 42566.90842365798, 42566.91968862415,
+42566.92956794338, 42566.938231611006, 42566.945828831624, 42566.952490552314,
+42566.958331688766, 42566.96345308104, 42566.967943211785, 42566.971879715435,
+42566.975330704096, 42566.97835593172, 42566.981007816634, 42566.98333233947,
+42566.98536983134, 42566.98715566627, 42566.988720868554, 42566.990092646345,
+42566.99129485969, 42566.99234843169, 42566.99327170879, 42566.99408077768,
+42566.99478974277, 42566.99541096992, 42566.99595530023, 42566.99643223775,
+42566.99685011392, 42566.99721623207, 42566.99753699381, 42566.99781801037,
+42566.998064199935, 42566.99827987293, 42566.99846880728, 42566.998634313786,
+42566.998779293914, 42566.99890629033, 42566.99901753119, 42566.99911496896,
+42566.9992003144, 42566.99927506661, 42566.99934053901, 42566.999397882406,
+42566.99944810508, 42566.99949209037, 42566.99953061215, 42566.99956434841,
+42566.999593893146, 42566.99961976661, 42566.99964242459, 42566.999662266375
+];
+
+        const rlS = [
+42465.0, 38551.008846577766, 34201.00819290327, 29844.8322311557, 26567.534954598457,
+22493.07359713574, 20971.518274442988, 16762.356267070023, 12526.252205574408,
+8513.707362262336, 6045.5900872951825, 3026.494255324916, 902.868743917139,
+210.9723542680987, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0
+];
+        const rlE = [
+39.0, 160.0953493708623, 218.93067774496672, 276.5868981453809, 339.97677360696866,
+398.953604419549, 457.7461677064897, 534.1711570295253, 598.3155092238111,
+645.6348940773462, 668.3762245448277, 673.6692822912945, 643.0181032672551,
+583.2950879009537, 515.8751076498377, 451.39071919360816, 394.9668792944069,
+345.5960193826061, 302.3965169597804, 264.5969523398079, 231.52233329733187,
+202.58204163516533, 177.25928643076966, 155.10187562692352, 135.71414117355806,
+118.7498735268633, 103.90613933600535, 90.91787191900472, 79.55313792912911,
+69.60899568798797, 60.90787122698949, 53.294387323615794, 46.63258890816381,
+40.80351529464334, 35.70307588281292, 31.240191397461302, 27.335167472778657,
+23.918271538681307, 20.92848759634615, 18.31242664680288, 16.02337331595252,
+14.020451651458458, 12.267895195026144, 10.73440829564788, 9.392607258691896,
+8.218531351355407, 7.191214932435979, 6.2923130658814825, 5.505773932646298,
+4.817552191065511, 4.215358167182321, 3.688438396284533, 3.2273835967489646,
+2.823960647155345, 2.470965566260927, 2.1620948704783114, 1.8918330116685225,
+1.6553538852099572, 1.448434649558712, 1.2673803183638732, 1.1089577785683886,
+0.9703380562473404, 0.8490457992164226, 0.7429150743143703, 0.6500506900250737,
+0.5687943537719398, 0.4976950595504473, 0.4354831771066412, 0.3810477799683111,
+0.3334168074722722, 0.2917397065382381, 0.2552722432209584, 0.2233632128183386,
+0.1954428112160463, 0.1710124598140405, 0.1496359023372854, 0.1309314145451247,
+0.1145649877269841, 0.1002443642611111, 0.0877138187284722, 0.0767495913874132,
+0.0671558924639866, 0.0587614059059882, 0.0514162301677397, 0.0449892013967722,
+0.0393655512221757, 0.0344448573194037, 0.0301392501544782, 0.0263718438851685,
+0.0230753633995224, 0.0201909429745821, 0.0176670751027593, 0.0154586907149144,
+0.0135263543755501, 0.0118355600786063, 0.0103561150687805, 0.009061600685183,
+0.0079289005995351, 0.0069377880245932, 0.006070564521519, 0.0053117439563291,
+0.004647775961788, 0.0040668039665645, 0.0035584534707439, 0.0031136467869009,
+0.0027244409385383, 0.002383885821221, 0.0020859000935684, 0.0018251625818723,
+0.0015970172591383, 0.001397390101746, 0.0012227163390277, 0.0010698767966493,
+0.0009361421970681, 0.0008191244224346, 0.0007167338696302,
+0.0006271421359265, 0.0005487493689356, 0.0004801556978187,
+0.0004201362355913, 0.0003676192061424, 0.0003216668053746,
+0.0002814584547028, 0.0002462761478649, 0.0002154916293818,
+0.0001885551757091, 0.0001649857787454, 0.0001443625564022,
+0.000126317236852, 0.0001105275822455, 9.671163446481932e-05,
+8.462268015671695e-05, 7.404484513712728e-05, 6.47892394949864e-05,
+5.66905845581131e-05, 4.960426148834895e-05, 4.3403728802305334e-05,
+3.797826270201717e-05, 3.3230979864265016e-05, 2.907710738123189e-05,
+2.5442468958577894e-05, 2.2262160338755664e-05, 1.947939029641121e-05,
+1.7044466509359806e-05, 1.4913908195689829e-05, 1.3049669671228604e-05,
+1.141846096232503e-05, 9.991153342034398e-06, 8.742259174280097e-06,
+7.649476777495084e-06, 6.6932921803082e-06, 5.856630657769675e-06,
+5.124551825548465e-06, 4.483982847354906e-06, 3.923484991435544e-06,
+3.4330493675061005e-06, 3.003918196567838e-06, 2.628428421996858e-06,
+2.299874869247252e-06, 2.012390510591345e-06, 1.7608416967674269e-06,
+1.5407364846714978e-06, 1.3481444240875606e-06, 1.1796263710766158e-06,
+1.0321730746920392e-06, 9.03151440355534e-07, 7.902575103110927e-07,
+6.914753215222059e-07, 6.050409063319301e-07, 5.294107930404387e-07,
+4.6323444391038394e-07, 4.05330138421586e-07, 3.5466387111888773e-07,
+3.1033088722902674e-07, 2.715395263253985e-07, 2.375970855347238e-07,
+2.078974498428832e-07, 1.8191026861252278e-07, 1.5917148503595742e-07,
+1.392750494064628e-07, 1.218656682306549e-07
+];
+        const rlI = [
+63.0, 58.87499999999996, 70.4762043856435, 87.77450990581528, 109.80865647315716,
+136.61880224929152, 166.97103105183635, 200.33629757917092, 238.48822112512295,
+279.20791390308176, 320.02543081945265, 357.854540199063, 390.9411233141801,
+415.4696543205612, 429.0287325481001, 432.22330206888694, 426.900955958247,
+415.2859650188697, 399.1589010104285, 379.93576548605427, 358.7338466019508,
+336.42644589241013, 313.6882802550329, 291.0330795938745, 268.84465981954355,
+247.40254749201785, 226.90306061258744, 207.4766050849327, 189.20182406267517,
+172.11713429486272, 156.2300967137379, 141.5249953722919, 127.96893730598784,
+115.51673416151014, 104.1147829788391, 93.70412703864228, 84.22284710066174,
+75.60790773466456, 67.79656200061905, 60.72739980721675, 54.34111030846473,
+48.58101621460666, 43.393427497523746, 38.72785332582721, 34.537103887665005,
+30.77730781104935, 27.40786597124745, 24.391358413338015, 21.693417773239204,
+19.282579832928683, 17.130119594964913, 15.20987942372486, 13.49809430558544,
+11.97321806866686, 10.615753425466012, 9.408087917610628, 8.334337216761753,
+7.380196740825784, 6.532802156359056, 5.780599036645461, 5.113221714063022,
+4.521381191517925, 3.996761849760568, 3.5319265961253965, 3.1202300381110653,
+2.755739226062619, 2.4331614879894516, 2.1477788721490496, 1.89538871612323,
+1.6722498720302363, 1.4750341341028084, 1.3007824354054007, 1.146865403607249,
+1.010947890408506, 0.8909571146092969, 0.7850540842847235, 0.6916079886076383,
+0.6091732741961163, 0.5364691442054009, 0.4723612405658399, 0.4158452906832074,
+0.366032519509033, 0.3221366461371696, 0.2834623009986795, 0.2493947153412642,
+0.2193905490385372, 0.1929697359358039, 0.1697082379670431, 0.149231610241061,
+0.1312092892636983, 0.1153495255081103, 0.1013948897359173, 0.089118289875774,
+0.0783194419471706, 0.0688217445373757, 0.0604695117561479, 0.0531255244602957,
+0.0466688639087585, 0.0409929959253063, 0.0360040771533367, 0.0316194581251927,
+0.0277663606732778, 0.0243807097151759, 0.021406101680257, 0.018792893838349,
+0.0164974005669475, 0.0144811841747009, 0.0127104293059676, 0.0111553912025255,
+0.009789909210613, 0.0085909779093463, 0.0075383691135865, 0.0066142987825955,
+0.0058031335560915, 0.0050911322512834, 0.0044662181967615, 0.0039177787594994,
+0.0034364888465617, 0.0030141555395984, 0.0026435813533117, 0.0023184439037161,
+0.0020331900325244, 0.0017829426642642, 0.0015634188762072, 0.0013708578409464,
+0.0012019574601982, 0.0010538186485621, 0.0009238963496821, 0.0008099564764207,
+0.0007100380629671, 0.0006224200017525, 0.0005455918129531, 0.0004782279604079,
+0.0004191652859918, 0.000367383185787, 0.0003219861966014, 0.0002821887012016,
+0.0002473014957016, 0.0002167199934391, 0.0001899138668594, 0.0001664179528736,
+0.0001458242682257, 0.0001277749999501, 0.0001119563523157, 9.809314601289588e-05,
+8.594407796408627e-05, 7.529756124954892e-05, 6.596807440561827e-05,
+5.779295794399854e-05, 5.0629603491640896e-05, 4.435298759002195e-05,
+3.885350802827163e-05, 3.403508571359688e-05, 2.9813499589848044e-05,
+2.6114926075789117e-05, 2.2874657974605815e-05, 2.003598086345754e-05,
+1.754918765753459e-05, 1.537071440206497e-05, 1.3462382417568738e-05,
+1.1790733743168548e-05, 1.0326448420526111e-05, 9.043833563892035e-06,
+7.92037539348983e-06, 6.936346490804433e-06, 6.074461483597445e-06,
+5.319575201699398e-06, 4.658418075959798e-06, 4.079364194584387e-06,
+3.572227994363824e-06, 3.1280860585847617e-06, 2.739120927132879e-06,
+2.398484204845167e-06, 2.1001765880428603e-06, 1.8389427220832232e-06,
+1.610179059719152e-06, 1.4098531154511131e-06, 1.2344327087598858e-06,
+1.0808239625136105e-06, 9.463169749268752e-07, 8.285382168274149e-07
+];
+        const rlR = [
+0.0, 3812.474257086335, 8092.038378001083, 12373.259813828065, 15571.849476599698,
+19561.763873338907, 20994.17440394216, 25097.945615606925, 29235.75540435457,
+33160.261170035155, 35567.40296446777, 38544.46415485605, 40667.028767657735,
+41409.95356759539, 41680.27872962355, 41741.56854855901, 41803.31473456885,
+41864.300585420024, 41923.6271518513, 41980.649851995666, 42034.92638992222,
+42086.174082293925, 42134.23500313571, 42179.04761460071, 42220.62376882842,
+42259.03014880261, 42294.373369872934, 42326.788092817565, 42356.4276078297,
+42383.45643983867, 42408.0446018808, 42430.363187125615, 42450.581043607344,
+42468.86232036536, 42485.36471095987, 42500.23825138542, 42513.62455524808,
+42525.65639054817, 42536.45752022454, 42546.14274336748, 42554.81808619708,
+42562.58110195544, 42569.52124712896, 42575.72030820004, 42581.252858675136,
+42586.18673065911, 42590.58348891781, 42594.49889834228, 42597.98337811563,
+42601.0824377975, 42603.83709205936, 42606.28425200148, 42608.45709191916,
+42610.385391105665, 42612.095850829784, 42613.61238703341, 42614.95639959309,
+42616.14701919547, 42617.201333015575, 42618.13459046647, 42618.96039032888,
+42619.690850573745, 42620.33676217254, 42620.90772815107, 42621.412289093365,
+42621.85803624166, 42622.251713273945, 42622.59930777223, 42622.90613332539,
+42623.17690314198, 42623.41579598084, 42623.62651514287, 42623.81234120507,
+42623.97617911986, 42624.12060024707, 42624.24787983489, 42624.36003041834,
+42624.458831559576, 42624.54585631303, 42624.6224947622, 42624.68997493941,
+42624.749381409514, 42624.80167176947, 42624.84769129034, 42624.88818590475,
+42624.92381372122, 42624.95515522823, 42624.98272233337, 42625.006966367386,
+42625.02828516883, 42625.04702935301, 42625.063507856656, 42625.07799284091,
+42625.090724025176, 42625.10191251689, 42625.11174419466, 42625.12038269635,
+42625.12797205698, 42625.13463903755, 42625.1404951798, 42625.14563861941,
+42625.15015568486, 42625.1541223078, 42625.15760526633, 42625.16066328086,
+42625.16334797998, 42625.16570475151, 42625.16777349209, 42625.16958926771,
+42625.171182895014, 42625.17258145348, 42625.17380873604, 42625.17488564592,
+42625.17583054574, 42625.17665956481, 42625.17738686944, 42625.17802490058,
+42625.178584583286, 42625.17907551025, 42625.1795061039, 42625.17988375836,
+42625.180214964654, 42625.18050542037, 42625.18076012646, 42625.18098347201,
+42625.181179308835, 42625.18135101706, 42625.181501562576, 42625.181633547785,
+42625.18174925585, 42625.18185068985, 42625.181939606984, 42625.18201754868,
+42625.18208586696, 42625.18214574772, 42625.18219823102, 42625.182244229065,
+42625.18228454174, 42625.18231987053, 42625.18235083052, 42625.182377961064,
+42625.18240173505, 42625.18242256711, 42625.18244082066, 42625.18245681443,
+42625.18247082774, 42625.18248310548, 42625.18249386227, 42625.18250328627,
+42625.182511542414, 42625.18251877521, 42625.182525111355, 42625.18253066187,
+42625.18253552401, 42625.18253978307, 42625.18254351378, 42625.18254678158,
+42625.18254964388, 42625.18255215089, 42625.18255434674, 42625.18255626992,
+42625.1825579543, 42625.18255942952, 42625.1825607215, 42625.182561852984,
+42625.18256284387, 42625.18256371167, 42625.1825644716, 42625.18256513709,
+42625.18256571986, 42625.18256623018, 42625.182566677046, 42625.182567068354,
+42625.182567410986, 42625.182567711025, 42625.18256797372, 42625.18256820375,
+42625.182568405166, 42625.18256858153, 42625.18256873592, 42625.1825688711
+];
+
+        const uniformS = [
+42465.0, 38953.21968244946, 36862.89685780558, 35186.69344327153, 33877.67626302512,
+32690.814360422763, 31522.76372145292, 30440.082045057537, 29390.788183517416,
+28264.765662678128, 27075.09008606649, 25840.700709459863, 24451.58918904345,
+22980.871471773804, 21368.35013863265, 19538.465493524734, 17432.585140801002,
+15059.4007216828, 12469.232243173532, 9766.158953016204, 7107.361806350183,
+4679.082805829407, 2647.544592142684, 1391.8966542237954, 624.4221423043856,
+192.2820443707737, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+];
+        const uniformE = [
+39.0, 160.0953493708623, 213.06723349692624, 262.2166735009169, 320.08372710042664,
+395.6951486284555, 496.147860678063, 628.9494773396468, 804.2494387280518, 1034.3655642420667,
+1333.3737184481706, 1718.548451021225, 2210.2984858324317, 2829.203492228914, 3595.9739954172437,
+4524.469929092863, 5612.899578674847, 6832.57958845355, 8116.78365640098, 9353.367027503042,
+10391.101333726045, 11068.600705525916, 11264.671869016756, 10949.157184239804, 10237.004556816437,
+9278.536593835188, 8223.36943797618, 7195.448258229158, 6296.017225950511, 5509.015072706701,
+4820.388188618362, 4217.839665041066, 3690.6097069109337, 3229.283493547067, 2825.6230568536816,
+2472.420174746972, 2163.3676529035997, 1892.9466962906504, 1656.3283592543191, 1449.28731434753,
+1268.126400054089, 1109.6106000473276, 970.9092750414112, 849.5456156612347, 743.3524137035805,
+650.4333619906326, 569.1291917418043, 497.9880427740784, 435.73953742731874, 381.2720952489037,
+333.61308334279096, 291.91144792494214, 255.4225169343241, 223.49470231753375, 195.55786452784193,
+171.11313146186174, 149.7239900291289, 131.0084912754879, 114.63242986605188, 100.30337613279542,
+87.765454116196, 76.79477235167144, 67.19542580771255, 58.795997581748466, 51.44649788402991,
+45.01568564852617, 39.388724942460414, 34.46513432465285, 30.156992534071247, 26.387368467312346,
+23.088947408898285, 20.202828982786016, 17.677475359937745, 15.467790939945544, 13.534317072452344,
+11.842527438395802, 10.362211508596324, 9.066935070021788, 7.933568186269062, 6.941872162985429,
+6.07413814261225, 5.314870874785722, 4.650512015437506, 4.069198013507816, 3.5605482618193385,
+3.1154797290919216, 2.7260447629554325, 2.3852891675860035, 2.0871280216377524, 1.826237018933034,
+1.597957391566404, 1.3982127176206038, 1.2234361279180284, 1.070506611928275, 0.9366932854372404,
+0.8196066247575859, 0.7171557966628869, 0.6275113220800266, 0.5490724068200231, 0.4804383559675201,
+0.42038356147158, 0.3678356162876325, 0.3218561642516784, 0.2816241437202187, 0.2464211257551913,
+0.2156184850357923, 0.1886661744063184, 0.1650829026055287, 0.1444475397798375, 0.1263915973073578,
+0.1105926476439381, 0.0967685666884458, 0.08467249585239, 0.0740884338708413, 0.0648273796369861,
+0.0567239571823629, 0.0496334625345675, 0.0434292797177465, 0.0380006197530282, 0.0332505422838997,
+0.0290942244984122, 0.0254574464361107, 0.0222752656315968, 0.0194908574276472, 0.0170545002491913,
+0.0149226877180424, 0.0130573517532871, 0.0114251827841262, 0.0099970349361104, 0.0087474055690966,
+0.0076539798729595, 0.0066972323888396, 0.0058600783402346, 0.0051275685477053, 0.0044866224792421,
+0.0039257946693369, 0.0034350703356697, 0.003005686543711, 0.0026299757257471, 0.0023012287600287,
+0.0020135751650251, 0.001761878269397, 0.0015416434857224, 0.0013489380500071, 0.0011803207937562,
+0.0010327806945366, 0.0009036831077196, 0.0007907227192546, 0.0006918823793478, 0.0006053970819293,
+0.0005297224466881, 0.0004635071408521, 0.0004055687482456, 0.0003548726547149, 0.0003105135728755,
+0.0002716993762661, 0.0002377369542328, 0.0002080198349537, 0.0001820173555845, 0.0001592651861364,
+0.0001393570378694, 0.0001219374081357, 0.0001066952321187, 9.335832810391776e-05, 8.1688537090928e-05,
+7.147746995456197e-05, 6.254278621024177e-05, 5.472493793396153e-05, 4.788432069221634e-05,
+4.18987806056893e-05, 3.666143302997813e-05, 3.207875390123085e-05, 2.8068909663577005e-05,
+2.456029595562988e-05, 2.1490258961176144e-05, 1.880397659102913e-05, 1.6453479517150498e-05,
+1.4396794577506671e-05, 1.2597195255318344e-05, 1.1022545848403551e-05, 9.644727617353104e-06
+];
+        const uniformI = [
+63.0, 58.87499999999996, 70.4762043856435, 87.04157937481023, 107.38415222316624,
+132.05402493598152, 162.65105780939825, 201.43367499281348, 251.27612037558185, 315.9107115915051,
+400.07630546583414, 509.59426234816505, 651.6136383903661, 834.8132864922251, 1069.2046820933788,
+1365.9579055071945, 1736.3798029999164, 2189.9379927628556, 2731.162156639141, 3355.5940913122454,
+4045.3943852769457, 4766.368568381709, 5469.033861089343, 6095.827293132251, 6593.639470714761,
+6931.316544500419, 7100.945540944044, 7114.445929127631, 6997.527542959472, 6784.882904351933,
+6504.240802104281, 6177.612068238107, 5822.326016619936, 5451.891370466674, 5076.710182807674,
+4704.668753084719, 4341.625738773128, 3991.8144469899185, 3658.173577313403, 3342.618396889706,
+3046.2623973417612, 2769.597854871128, 2512.6423434668836, 2275.057096637503, 2056.242141932659,
+1855.412316226655, 1671.6575841573906, 1503.9905068169176, 1351.3832254755455, 1212.795921157454,
+1087.1983728982168, 973.5859550448916, 870.9911781719536, 778.491681621322, 695.2154220365394,
+620.3436662401571, 553.1122839242956, 492.81174211732304, 438.78612608142714, 390.43144751733695,
+347.19344846003133, 308.5650661588369, 274.0836889658192, 243.32830448238045, 215.91661782547337,
+191.50219894305212, 169.77170265725346, 150.4421928954534, 133.2585928438273, 117.99127507575378,
+104.43379969477446, 92.40080387877605, 81.72604266179913, 72.2605781301058, 63.87111226472673,
+56.438457289536615, 49.85613646368797, 44.02910769316423, 38.87260204932209, 34.31106920841687,
+30.27722191330191, 26.711171764942453, 23.5596489435846, 20.77529881071649, 18.31604873230261,
+16.14453887470108, 14.2276111444517, 12.535850862042322, 11.04317617055595, 9.726470577466964,
+8.5652544080526, 7.541391309419453, 6.638826283490684, 5.843352044696052, 5.142400793373366,
+4.524858769285396, 3.980901201767897, 3.5018455046696286, 3.080020776405399, 2.7086518591999895,
+2.38175638809593, 2.094053420694744, 1.8408823840600212, 1.618131206868621, 1.4221726238524168,
+1.2498077468786135, 1.0982160936682852, 0.964911352087892, 0.8477022360438836, 0.744657859081523,
+0.6540771145904394, 0.5744616077472974, 0.5044917346194534, 0.4430055487982231, 0.3889800960609036,
+0.341514933363969, 0.2998175803883405, 0.2631906802925412, 0.2310206716440393, 0.2027677960211622,
+0.1779572858036266, 0.1561715944654099, 0.1370435474891511, 0.1202503060517933, 0.105508048079993,
+0.0925672823140001, 0.0812087208053268, 0.0712396439451553, 0.062490699801006, 0.0548130863393047,
+0.0480760711298268, 0.0421648084525429, 0.0369784184364989, 0.0324282970238141, 0.0284366292317324,
+0.0249350814371044, 0.0218636512797566, 0.0191696563174644, 0.0168068448043619, 0.0147346139408858,
+0.0129173226871914, 0.0113236877703636, 0.0099262528725577, 0.0087009221836219, 0.0076265505564982,
+0.0066845834333609, 0.0058587405296978, 0.0051347379853488, 0.0045000443273486, 0.0039436661494316,
+0.0034559599061825, 0.0030284666539925, 0.0026537669531715, 0.0023253534819634, 0.0020375192092366,
+0.0017852592330979, 0.0015641846218315, 0.0013704467951346, 0.0012006711609132, 0.0010518988788022,
+0.000921535758669, 0.0008073074228785, 0.0007072199670557, 0.0006195254472054, 0.0005426916029033,
+0.0004753752981964, 0.0004163992250555, 0.0003647314697524, 0.0003194675913152, 0.000279814904071,
+0.0002450786939223, 0.0002146501310621, 0.0001879956708623, 0.0001646477601614, 0.0001441966885613,
+0.0001262834439941, 0.0001105934490688, 9.685106985583532e-05, 8.481480205576148e-05, 7.427305116899608e-05,
+6.504043351876131e-05
+];
+        const uniformR = [
+0.0, 3428.9636590151667, 5456.865116568376, 7069.334476340076, 8300.847910343076,
+9387.842253830791, 10424.843147877604, 11336.689863690486, 12160.84131845944, 12992.11312256879,
+13799.471291310883, 14539.167978462126, 15294.510088025125, 15963.272630045389, 16575.33227555159,
+17179.967763570083, 17826.99656921911, 18526.942788795674, 19291.683035481215, 20133.741019863377,
+21065.003566341697, 22094.809011957845, 23227.610769446077, 24179.953661801257, 25161.76862356152,
+26214.699610690735, 27315.870179789315, 28330.290971352737, 29346.64038979956, 30346.2871816509,
+31315.556167986902, 32244.733425430375, 33127.24943517868, 33959.010294695814, 34737.85191904818,
+35463.096230877854, 36135.19176703283, 36755.42401542897, 37325.683222141815, 37848.2794474723,
+38325.79636131368, 38760.976703791086, 39156.63354020124, 39515.5824464108, 39840.5906030733,
+40134.339480492265, 40399.39838281035, 40638.20660911856, 40853.06239580669, 41046.117142303185,
+41219.37370246855, 41374.6877557397, 41513.771463603254, 41638.19877477067, 41749.411872145174,
+41848.72836100754, 41937.34888475614, 42016.364925316746, 42086.76660276205, 42149.45033505942,
+42205.22625613333, 42254.82532019905, 42298.906043936026, 42338.06085664542, 42372.82204300005,
+42403.66727411798, 42431.024731109814, 42455.277831489446, 42476.76957333163, 42495.80651516648,
+42512.66241160588, 42527.58152584798, 42540.78164068782, 42552.456789639495, 42562.77972937237,
+42571.90417398163, 42579.966810737256, 42587.089115946364, 42593.37898847398, 42598.93221733815,
+42603.83379865362, 42608.1591160698, 42611.974997750534, 42615.34066188533, 42618.30856171544,
+42620.92514010576, 42623.231502802155, 42625.264018679925, 42627.05485451736, 42628.63245111316,
+42630.021946909954, 42631.24555468251, 42632.32289629815, 42633.271300052926, 42634.106064630745,
+42634.840693315506, 42635.48710171109, 42636.055801882794, 42636.55606552633, 42636.99606849437,
+42637.383018759974, 42637.72326967258, 42638.02242016124, 42638.28540335894, 42638.51656495993,
+42638.71973247763, 42638.89827644148, 42639.05516445485, 42639.19300893372, 42639.31410925315,
+42639.420488947304, 42639.51392853513, 42639.595994479096, 42639.66806472686, 42639.73135123385,
+42639.786919819, 42639.835707666614, 42639.878538749545, 42639.91613741817, 42639.94914037125,
+42639.978107199226, 42640.00352966867, 42640.02583989643, 42640.04541754607, 42640.06259616124,
+42640.07766873953, 42640.09089263699, 42640.102493882805, 42640.11267097482, 42640.12159821765,
+42640.129428658554, 42640.1362966687, 42640.14232021278, 42640.14760284399, 42640.15223545786,
+42640.15629783343, 42640.15985998796, 42640.16298336671, 42640.165721889025, 42640.16812286685,
+42640.17022781173, 42640.17207314352, 42640.173690813215, 42640.175108849326, 42640.17635183821,
+42640.17744134543, 42640.17839628593, 42640.17923324887, 42640.17996678287, 42640.18060964634,
+42640.181173027224, 42640.18166673576, 42640.18209937388, 42640.182478483424, 42640.1828106768,
+42640.18310175096, 42640.18335678798, 42640.183580242934, 42640.18377602105, 42640.183947545505,
+42640.18409781675, 42640.184229464736, 42640.184344794376, 42640.18444582579, 42640.18453432943,
+42640.18461185679, 42640.18467976757, 42640.18473925315, 42640.184791357664, 42640.18483699588,
+42640.184876969455, 42640.184911980665, 42640.184942644984, 42640.18496950151, 42640.18499302262,
+42640.18501362215, 42640.18503166263, 42640.18504746168, 42640.18506129759, 42640.18507341397,
+42640.18508402441
+];
+        const hes0 = [
+63.0, 58.87499999999996, 70.4762043856435, 87.30831130476669, 108.27004158745272,
+132.18019923850824, 158.94685919946423, 188.88970143634285, 222.0761195086843,
+258.1865658151511, 296.28650277731623, 334.5616699973916, 368.9480661358125,
+395.53140811797925, 409.34479628291456, 412.7288835328484, 407.89679033578375,
+396.98884918198905, 381.71880672410754, 363.4498676177659, 343.25798708054924,
+321.98446976548456, 300.27960910480203, 278.63882773241903, 257.4325483507668,
+236.93082902254991, 217.32363186527004, 198.73745485685905, 181.24893897810685,
+164.89596387300514, 149.68666176073228, 135.60670907365733, 122.62519618203588,
+110.69932586721208, 99.778149454894, 89.80551447681799, 80.7223683418892,
+72.46853787744463, 64.9840839955854, 58.21031351284126, 52.09051576662528,
+46.57047967541638, 41.59883689852016, 37.127268442660124, 33.11060516428901,
+29.50684689900553, 26.277120219703523, 23.38559092058946, 20.799344108386247,
+18.48824214015551, 16.424768482908245, 14.58386380277802, 12.942759153345015,
+11.480809967103394, 10.179333613723903, 9.0214525341585, 7.991944357803046,
+7.077099933432828, 6.264589830629579, 5.543339577980185, 4.903413681743494,
+4.335908300963413, 3.832852331432578, 3.387116562651726, 2.992330511733022,
+2.642806500120188, 2.333470518194132, 2.059799415353266, 1.817763955805594,
+1.6037772905054544, 1.4146484113427518, 1.2475401731967477, 1.099931491494445,
+0.969583346441032, 0.8545082493216677, 0.7529428506014004, 0.6633233935147467,
+0.5842637401012786, 0.5145357189679404, 0.4530515652792233, 0.3988482434898425,
+0.3510734620854881, 0.3089732070664102, 0.2718806371044872, 0.2392061982561792,
+0.2104288298653734, 0.1850881458961017, 0.1627774874567175, 0.1431377527797382,
+0.1258519204723653, 0.1106401905191149, 0.0972556753663358, 0.0854805805130669,
+0.0751228204353818, 0.066013021440772, 0.0580018682405151, 0.0509577556931703,
+0.0447647113595695, 0.0393205582636622, 0.0345352906155949, 0.0303296382614088,
+0.0266337983125298, 0.0233863148095754, 0.0205330894179029, 0.0180265080631145,
+0.0158246701173248, 0.0138907082630302, 0.0121921885104695, 0.0107005810440763,
+0.0093907936399228, 0.0082407603432377, 0.0072310789360232, 0.0063446914710405,
+0.0055666028103206, 0.0048836326931678, 0.0042841973786394, 0.0037581173681246,
+0.003296448121522, 0.0028913310415429, 0.0025358623201024, 0.002223977523306,
+0.0019503500413638, 0.0017103017505972, 0.001499724429833, 0.0013150106458699,
+0.0011529929749357, 0.0010108905614683, 0.0008862621341987, 0.0007769647042072,
+0.0006811172619956, 0.000597068872087, 0.0005233706355111, 0.0004587510538736,
+0.0004020943845406, 0.0003524216256741, 0.0003088738132086, 0.0002706973500522,
+0.0002372311214339, 0.0002078951799446, 0.0001821808099001, 0.0001596418036184,
+0.000139886802414, 0.0001225725728962, 0.0001073981048132, 9.40994304507966e-05,
+8.244507770661853e-05, 7.223207961800958e-05, 6.328247248694565e-05,
+5.544022298709505e-05, 4.856853188029468e-05, 4.25474683380463e-05,
+3.727189446103778e-05, 3.2649644509334274e-05, 2.8599927679318524e-05,
+2.5051927062533167e-05, 2.194357075954176e-05, 1.9220454054449264e-05,
+1.6834894131800428e-05, 1.4745101080317372e-05, 1.2914450915270844e-05,
+1.1310848096570394e-05, 9.906166552249148e-06, 8.675759562718063e-06,
+7.598030042664062e-06, 6.65405379471885e-06, 5.827249219568531e-06,
+5.103087766427785e-06, 4.468840109314583e-06, 3.913353650241922e-06,
+3.4268574907545347e-06, 3.000791487375521e-06, 2.6276564225666963e-06,
+2.3008826878428167e-06, 2.0147151959455714e-06, 1.7641125199521806e-06,
+1.544658503672276e-06, 1.3524848038967724e-06, 1.1842030147098445e-06,
+1.036845190414116e-06, 9.078117295063528e-07, 7.948257100843455e-07
+];
+        const hes2 = [
+63.0, 58.87499999999996, 70.4762043856435, 87.6633341363023, 109.53213070963562,
+135.16704626964662, 164.2886824962095, 197.24447799916044, 233.60963062571955,
+273.1314204709308, 315.5286268056356, 357.9425344576414, 400.31112461265786,
+440.0062169626197, 474.2143635186748, 498.4179422027155, 509.83810489875657,
+509.5147627075783, 500.38999454923135, 484.8237259864582, 464.69832092548654,
+441.5052326658742, 416.22639445927416, 389.8346516175515, 363.0795114216602,
+336.52959357078373, 310.60769815457644, 285.61971055394656, 261.7783678792965,
+239.22274716117872, 218.03419685185497, 198.2493163189361, 179.87048955640898,
+162.8743964567205, 147.2188552666556, 132.8482912443452, 119.69807731253476,
+107.69795119738174, 96.77467891106376, 86.85410543005621, 77.86270915090668,
+69.72875642099264, 62.38313550889657, 55.75993526216564, 49.79682194743586,
+44.43525799804149, 39.620598286030706, 35.30209281834347, 31.432819202964772,
+27.969563648520683, 24.872665488964, 22.105837128422152, 19.63596876643679,
+17.432925195547117, 15.4693402817451, 13.7204133770767, 12.163710816841892,
+10.778974774936463, 9.547941051097812, 8.45416681087779, 7.482868866232817,
+6.620772749423498, 5.85597257700538, 5.177801508816692, 4.5767124664463035,
+4.044168676339117, 3.572543535966957, 3.1550292604027126, 2.7855537455080532,
+2.458705078167271, 2.1696631298372684, 1.9141376841283877, 1.6883125697730044,
+1.488795295260521, 1.31257170910365, 1.156965238966288, 1.019600292810297,
+0.8983694351074061, 0.7914039804890339, 0.6970476755879502, 0.6138331669909246,
+0.5404609789897459, 0.4757807490783307, 0.418774491839799, 0.3685416829851895,
+0.3242859748623543, 0.2853033727905427, 0.2509717181511386, 0.2207413393474582,
+0.1941267456134933, 0.1706992512842071, 0.150080429621453, 0.1319363057025759,
+0.1159722073044435, 0.1019282012325505, 0.0895750502280495, 0.0787106325063158,
+0.0691567722059741, 0.0607564346198969, 0.0533712450978408, 0.046879295008123,
+0.0411732021728325, 0.0361583967932783, 0.0317516071015898, 0.0278795218488665,
+0.0244776093048799, 0.0214890747307315, 0.0188639403227856, 0.0165582334396336,
+0.0145332705372762, 0.0127550256723425, 0.0111935737080646, 0.0098225994900694,
+0.0086189652642503, 0.0075623295008815, 0.0066348110801248, 0.0058206934952694,
+0.0051061643513552, 0.0044790859871453, 0.003928793535646, 0.0034459171695993,
+0.0030222256598929, 0.0026504887122578, 0.0023243558459554, 0.0020382498418366,
+0.0017872730201433, 0.0015671248142279, 0.0013740292881087, 0.0012046714062316,
+0.0010561410054268, 0.000925883544012, 0.0008116568132364, 0.0007114928934898,
+0.0006236647234389, 0.0005466567258394, 0.0004791390003926, 0.000419944652729,
+0.0003680498803255, 0.0003225564817313, 0.0002826764956119, 0.0002477187114579,
+0.0002170768249234, 0.000190219038149, 0.0001666789295298, 0.0001460474386095,
+0.0001279658304441, 0.0001121195202049, 9.82326532362726e-05,
+8.606334848765919e-05, 7.53995244174909e-05, 6.605523628598097e-05,
+5.7867462396527406e-05, 5.06932844366421e-05, 4.440741374464521e-05,
+3.890002119449317e-05, 3.407483354626321e-05, 2.9847463639621735e-05,
+2.6143945787504538e-05, 2.2899451223639764e-05, 2.0057161528890484e-05,
+1.7567280659098328e-05, 1.5386168566413166e-05, 1.3475581486784785e-05,
+1.1802005793370906e-05, 1.0336073919857447e-05, 9.052052266153473e-06,
+7.927392235408465e-06, 6.9423366367174106e-06, 6.079574640614881e-06,
+5.323939310669865e-06, 4.662142468377708e-06, 4.082542292580421e-06,
+3.574939619793519e-06, 3.130399407707029e-06, 2.7410942592188224e-06,
+2.4001672860809e-06, 2.1016119261188732e-06, 1.8401666217523716e-06,
+1.6112225252319185e-06, 1.4107426220338662e-06, 1.2351908620990069e-06
+];
+        const hes3 = [
+63.0, 58.87499999999996, 70.4762043856435, 88.39731648201187, 110.43910786108934,
+137.1021224461143, 169.13050521471985, 206.39514480784197, 250.50964067569717,
+301.0050803662509, 356.3273151282556, 414.87939081143594, 474.5303508320241,
+530.8166018177093, 581.8488334422046, 620.4720148982575, 643.5540093595254,
+652.5906926955846, 651.0830298080714, 641.7878223726694, 623.355919968035,
+598.400637450844, 568.9984498941859, 536.7861226214388, 503.0414106914955,
+468.7499944102616, 434.66089658486715, 401.33227149109166, 369.1691549655617,
+338.45451123274364, 309.37469787540255, 282.0402896810502, 256.5030497909815,
+232.76970827001952, 210.81310019590495, 190.58112449396344, 172.00390835154377,
+154.9994978813085, 139.47834185218028, 125.34679015440224, 112.5097908425972,
+100.87293795083995, 90.34399581861416, 80.83400357982661, 72.25804505109629,
+64.53575392149324, 57.59161139712145, 51.35508287175111, 45.7606314264421,
+40.74763870984532, 36.260257766864754, 32.24721745664962, 28.661594055119515,
+25.460562324416244, 22.60513562773849, 20.059902469020564, 17.792765055892467,
+15.774684048619749, 13.97943250658271, 12.383361126723088, 10.965176143136894,
+9.70573068860552, 8.587829978267607, 7.59605033875939, 6.7165718530789515,
+5.93702420572793, 5.246345180826661, 4.6346511767788074, 4.093119045586154,
+3.6138785356633383, 3.1899146079415237, 2.8149789012940643, 2.4835096409282187,
+2.1905593092086884, 1.9317294298974563, 1.7031118520230064, 1.5012359569739009,
+1.323021250741109, 1.1657348415889954, 1.026953341125107, 0.9045287632570992,
+0.7965580305122164, 0.7013557304086939, 0.6174297958594679, 0.5434598128786294,
+0.4782776861273105, 0.4208504180972624, 0.3702647810372751, 0.3257136821523334,
+0.2864840422359068, 0.2519460258300886, 0.2215434773501876, 0.1947854324661513,
+0.1712385875090857, 0.1505206218714814, 0.1322942793955732, 0.1162621246922925,
+0.1021618992953267, 0.0897624106173287, 0.078859893919235, 0.0692747940042499,
+0.060848919175078, 0.0534429252107869, 0.046934091787376, 0.0412143579379004,
+0.0361885868733312, 0.0317730338093091, 0.0278939934075549, 0.0244866060811043,
+0.0214938047633895, 0.0188653858329, 0.0165571897451596, 0.0145303785767622,
+0.0127507991544506, 0.0111884217456731, 0.0098168454436315, 0.0086128624056069,
+0.0075560740127026, 0.0066285528249404, 0.0058145449193877, 0.0051002078309484,
+0.0044733798747805, 0.0039233771241764, 0.0034408147554345, 0.0030174498582452,
+0.0026460431521704, 0.0023202373520397, 0.0020344501920839, 0.0017837803544013,
+0.001563924755525, 0.0013711058285905, 0.0012020076007363, 0.0010537195084039,
+0.0009236870193616, 0.0008096682415199, 0.0007096957966829, 0.0006220433238287,
+0.0005451960526911, 0.0004778249555398, 0.0004187640441846, 0.0003669904313077,
+0.000321606821091, 0.0002818261344804, 0.0002469580099782, 0.0002163969521376,
+0.000189611927469, 0.0001661372316913, 0.0001455644735779, 0.0001275355393932,
+0.0001117364184083, 9.78917844838747e-05, 8.576024146043676e-05,
+7.513015130963624e-05, 6.58159738517209e-05, 5.765505551093223e-05,
+5.050481219264556e-05, 4.424025805763327e-05, 3.875183784820203e-05,
+3.394352558669644e-05, 2.973115700509052e-05, 2.6040967050938027e-05,
+2.2808307316556916e-05, 1.9976521313689706e-05, 1.7495958216651985e-05,
+1.532310806857633e-05, 1.3419843527723592e-05, 1.1752755059088965e-05,
+1.029256808155784e-05, 9.013631989810248e-06, 7.8934722068958e-06,
+6.912397508872538e-06, 6.0531558155537955e-06, 5.300632477429854e-06,
+4.641585822454217e-06, 4.064415370107237e-06, 3.5589586849522304e-06,
+3.1163133374261144e-06, 2.728680874327489e-06, 2.3892300828191003e-06,
+2.0919771662803247e-06, 1.8316807437640952e-06
+];
+        const hes5 = [
+63.0, 58.87499999999996, 70.4762043856435, 89.19433960735677, 114.45699483890428,
+147.0896375921973, 186.3589667224857, 234.3908970627052, 293.84525820502256,
+365.9344493410242, 453.5162740537163, 559.7669456841055, 685.1755642675239,
+829.6363774195355, 994.4256006171628, 1172.5466804631271, 1354.327194808275,
+1534.2052788930082, 1699.943833277984, 1829.6312544936804, 1918.5982173467507,
+1951.0627570339336, 1940.570755423715, 1898.0487050120548, 1832.2634403280956,
+1750.205501809267, 1657.40837824498, 1558.2139573888185, 1455.9928925076115,
+1353.3272207662137, 1252.161409446482, 1153.9270257879966, 1059.6453982979183,
+970.0119384250391, 885.4652017627901, 806.2432706631967, 732.4296210766587,
+663.990283510386, 600.8038109872822, 542.6853171130382, 489.4056374731939,
+440.7064913598607, 396.31237300057774, 355.93977757039085, 319.30426354113655,
+286.125766170247, 256.1325044604682, 229.06376345562583, 204.67178335457223,
+182.72294500459307, 162.99840650988395, 145.2943168083184, 129.4217081605671,
+115.206149743315, 102.4872282563881, 91.117908065186, 80.96381242062039,
+71.90245832254226, 63.82247027893828, 56.622792276968525, 50.21191248483107,
+44.50711134635597, 39.43374064702901, 34.92453868240828, 30.91898473247116,
+27.36269454265276, 24.206857354884445, 21.407714154149556, 18.926076143702858,
+16.726881990444575, 14.778792054242922, 13.053817601123058, 11.52698287554882,
+10.176017851447629, 8.981079478881597, 7.924499280191331, 6.990555215455926,
+6.165265823771237, 5.436204747440374, 4.792333855416505, 4.223853296123307,
+3.722066924936922, 3.279261665744689, 2.8885994773193593, 2.5440207024768013,
+2.240157680229226, 1.9722575978251655, 1.736113650346671, 1.5280036602673237,
+1.344635388060182, 1.1830978376894656, 1.0408179278098306, 0.9155219609749288,
+0.8052013794027715, 0.7080823471628899, 0.6225987453550701, 0.5473682092607216,
+0.4811708748817332, 0.4229305370460322, 0.3716979526505775, 0.3266360509137976,
+0.2870068379877519, 0.2521598061862935, 0.2215216786533017, 0.1945873387418916,
+0.1709118099022289, 0.1501031666670849, 0.1318162705502432, 0.1157472364885005,
+0.1016285460048989, 0.0892247326778243, 0.0783285738847002, 0.0687577302562018,
+0.06035178092311, 0.0529696085496642, 0.0464870934026216, 0.0407950803744357,
+0.0357975870251813, 0.0314102243877909, 0.0275588055456804, 0.024178119886496,
+0.0212108535012775, 0.0186066384712693, 0.0163212157974906, 0.0143156985100584,
+0.0125559230710904, 0.0110118785798807, 0.0096572045225469, 0.0084687488987868,
+0.0074261795220599, 0.0065116421409064, 0.0057094597810966, 0.005005868372291,
+0.0043887843090388, 0.003847600113224, 0.0033730048214839, 0.0029568261237237,
+0.0025918916339085, 0.0022719069873701, 0.0019913487348348, 0.0017453702465969,
+0.0015297190545864, 0.0013406642488895, 0.001174932711601, 0.001029653117356,
+0.0009023067588623, 0.000790684369298, 0.0006928482133874, 0.0006070988069296,
+0.0005319457019626, 0.0004660818428451, 0.0004083610584562, 0.0003577783084063,
+0.0003134523475045, 0.0002746105134799, 0.0002405753787922, 0.0002107530388693,
+0.0001846228368046, 0.0001617283488845, 0.0001416694767143, 0.0001240955105025,
+0.0001086990445847, 9.521064077877254e-05, 8.339414791040123e-05,
+7.304259704643701e-05, 6.397460180834892e-05, 5.6031201776062336e-05,
+4.9073094577274814e-05, 4.297820891787575e-05, 3.763957665693578e-05,
+3.2963467163785516e-05, 2.886775170171238e-05, 2.5280469539055503e-05,
+2.21385709610083e-05, 1.938681540316917e-05, 1.6976805602590372e-05,
+1.4866141009252876e-05, 1.3017675760513094e-05, 1.1398868328234812e-05,
+9.981211533879046e-06, 8.739733017864386e-06
+];
+
+        const bud200 = [
+63.0, 58.87499999999996, 70.4762043856435, 90.5412634566429, 118.5840660099911,
+153.612046895098, 196.49375331314428, 249.22783984337548, 315.2059862452839,
+396.8942142733403, 498.2212319017502, 622.8972979306351, 776.049777857373,
+962.1012987416927, 1184.6490445709685, 1448.1263727975122, 1754.483376612828,
+2100.268966429369, 2479.908296790883, 2882.4457230831003, 3288.1123015253247,
+3664.40281808645, 3983.563136425252, 4224.830760514178, 4358.702139822887,
+4383.186108434497, 4324.397637594456, 4203.104113485558, 4037.0785398059297,
+3840.468671335388, 3624.431472280063, 3397.6815824121404, 3166.9462796109815,
+2937.342190374203, 2712.686584332793, 2495.754047938649, 2288.4876090727084,
+2092.1719297612412, 1907.5749572461905, 1735.0633893376478, 1574.6964385966403,
+1426.3016462802304, 1289.5358797879192, 1163.9341284939014, 1048.9482770145682,
+943.9776691726654, 848.3929691988694, 761.5545697685424, 682.8265814499302,
+611.5872583993652, 547.236565068596, 489.2014635514367, 436.939396993006,
+389.940357842165, 347.7278578032813, 309.859056741917, 275.92425850407386,
+245.54594092383303, 218.37745379358404, 194.1014910567261, 172.42842094949827,
+153.09453942355057, 135.8602972179551, 120.50853882772346, 106.84278184169756,
+94.68555728357644, 83.87682534206456, 74.27247593339375, 65.74291966379435,
+58.171771753312754, 51.45462918199957, 45.49793958955037, 40.217959188257225,
+35.539796044639914, 31.39653447184408, 27.72843589096428, 24.482211314394345,
+21.610360537067, 19.07057315876672, 16.82518667577782, 14.840697051468682,
+13.087317385889175, 11.53858054052795, 10.170981825426177, 8.963658113645808,
+7.8981000063525695, 6.957893925769204, 6.12849125951437, 5.397001915903348,
+4.752009873982519, 4.183408523363639, 3.6822537867679865, 3.240633202414675,
+2.851549314106572, 2.5088158744093065, 2.2069655111647624, 1.9411676403176976,
+1.7071555293195833, 1.501161525904576, 1.319859567523597, 1.1603141778892254,
+1.0199352396297117, 0.8964379066559743, 0.7878070871639573, 0.6922659888455882,
+0.6082482724488546, 0.5343734088575745, 0.4694248788630865, 0.4123308942446654,
+0.3621473540979089, 0.3180427819503792, 0.2792850174477608, 0.2452294616163725,
+0.2153086972139676, 0.1890233257476288, 0.165933880616667, 0.1456536917574338,
+0.1278425913316261, 0.1122013625956342, 0.0984668452830039, 0.0864076207756204,
+0.0758202091669467, 0.0665257181538888, 0.0583668906413474, 0.0512055041026315,
+0.0449200801967619, 0.0394038679781318, 0.0345630683145498, 0.0303152709183891,
+0.026588078747726, 0.0233178974992335, 0.0204488705360921, 0.0179319419113059,
+0.0157240321943, 0.0137873136173616, 0.0120885726557764, 0.0105986495657344,
+0.0092919456488147, 0.0081459901102533, 0.0071410593472206, 0.0062598423580313,
+0.0054871467168889, 0.0048096402232304, 0.0042156239204289, 0.0036948326947487,
+0.0032382601202252, 0.002838004615757, 0.0024871343335532, 0.0021795685088011,
+0.0019099732740084, 0.0016736701823067, 0.0014665558959891, 0.0012850316831083,
+0.0011259415291065, 0.0009865178148711, 0.0008643336396432, 0.000757260978943,
+0.0006634339659367, 0.000581216671076, 0.0005091748308041, 0.0004460510429072,
+0.0003907430047898, 0.0003422844225448, 0.0002998282640299, 0.0002626320690003,
+0.0002300450643531, 0.0002014968632899, 0.0001764875542196, 0.0001545790089486,
+0.0001353872605498, 0.0001185758195981, 0.0001038498135343, 9.095084803053872e-05,
+7.96525016164282e-05, 6.975637570555197e-05, 6.108863170622418e-05,
+5.349695528340294e-05, 4.684789519336907e-05, 4.102453056881925e-05,
+3.592442619739222e-05, 3.1457840308154264e-05
+];
+        const bud450 = [
+63.0, 58.87499999999996, 70.4762043856435, 88.22342035018973, 111.39377958608736,
+138.80069472349282, 171.1636497552613, 209.47344385510848, 255.18972654881057,
+308.1830123331459, 369.9236047800501, 438.7593687288666, 512.1212027304683,
+588.7592139287519, 666.1189080245264, 738.6301654189647, 805.4844384393461,
+859.0130143976259, 892.7513947861255, 902.1131908848909, 893.0253738360203,
+870.2626293737243, 837.6501669310435, 798.2327814038351, 754.415585447646,
+708.0809815975108, 660.6857254670966, 613.341323985945, 566.8804992324748,
+521.9120146096494, 478.865793738787, 438.0299531974474, 399.5811093414882,
+363.6090994969924, 330.1370724797455, 299.13774735110053, 270.5465080162045,
+244.2718908718859, 220.20392996236325, 198.22074624517904, 178.19370227434132,
+159.99138889845688, 143.48266477907111, 128.5389312470484, 115.03579304004828,
+102.85422879479744, 91.8813729538093, 82.0109922703216, 73.14372475287868,
+65.18713617278077, 58.05563873462199, 51.67030782145606, 45.95862556834133,
+40.854174136213494, 36.29629673825663, 32.229740533748696, 28.60429229940797,
+25.374415189734407, 22.498892800519684, 19.940485065742237, 17.665599174199468,
+15.64397762743168, 13.84840472400884, 12.25443210494156, 10.84012349590999,
+9.585818405280792, 8.473914258643152, 7.488666251189157, 6.6160040625417125,
+5.843364491367883, 5.159539018498799, 4.554535288516651, 4.019451503735098,
+3.546362745439378, 3.12821827054903, 2.7587488738357475, 2.432383453553721,
+2.144173969528741, 1.889728035625564, 1.665148441704869, 1.4669789526624732,
+1.292155783154562, 1.1379641956101536, 1.0019997157445235, 0.882133503778434,
+0.7764814608078238, 0.6833766882082979, 0.6013449536120765, 0.529082849921838,
+0.4654383641198402, 0.4093936004090591, 0.3600494276186685, 0.3166118439612571,
+0.2783798732903183, 0.2447348261212159, 0.2151307759922246, 0.1890861173956198,
+0.1661760856375303, 0.1460261317182929, 0.1283060567838953, 0.1127248209976704,
+0.0990259509259005, 0.0869834778198249, 0.0763983466006284, 0.0670952419969341,
+0.0589197842227896, 0.0517360518882027, 0.0454243945678305, 0.0398795016745543,
+0.035008698046123, 0.0307304400025473, 0.0269729886126772, 0.0236732395593339,
+0.0207756913486241, 0.0182315357022234, 0.0159978558298832, 0.0140369199286659,
+0.0123155587183124, 0.0108046171191488, 0.0094784713283628, 0.0083146035686954,
+0.0072932276852181, 0.0063969595639455, 0.0056105270522064, 0.0049205146853269,
+0.0043151390765007, 0.0037840513149436, 0.003318163148866, 0.0029094941109352,
+0.0025510370805061, 0.0022366400741039, 0.0019609023179789, 0.0017190828880641,
+0.0015070204069126, 0.0013210624673541, 0.0011580036114824, 0.0010150308336594,
+0.000889675699691, 0.0007797722831488, 0.000683420215686, 0.0005989522326659,
+0.0005249056698175, 0.0004599974321487, 0.0004031020140373, 0.0003532322002031,
+0.0003095221219667, 0.00027121238254, 0.0002376369997103, 0.0002082119447361,
+0.0001824250830637, 0.0001598273460404, 0.0001400249835222, 0.0001226727654992,
+0.0001074680168838, 9.41453836922287e-05, 8.247224123256617e-05,
+7.224466579438065e-05, 6.328390089798468e-05, 5.543325756679512e-05,
+4.8555395468995894e-05, 4.2529938262271546e-05, 3.725138217397345e-05,
+3.262726185464319e-05, 2.8576541939169737e-05, 2.502820661079376e-05,
+2.192002285360473e-05, 1.919745605618431e-05, 1.681271924283e-05,
+1.4723939503478005e-05, 1.2894427207830478e-05, 1.1292035357383569e-05,
+9.888597981023689e-06, 8.659437841949777e-06, 7.582934919038098e-06,
+6.6401481747286624e-06, 5.8144840419478595e-06, 5.091405870184612e-06,
+4.458179279394596e-06, 3.903648992027183e-06, 3.418043258786851e-06,
+2.9928024720925502e-06
+];
+        const bud700 = [
+63.0, 58.87499999999996, 70.4762043856435, 87.54563817971516,
+108.39409539576675, 132.98374949824083, 161.62619673746173,
+194.91792014888716, 232.29751279196984, 273.4595810230229,
+317.3611750574686, 362.7639114300379, 406.5841728062194,
+445.68163275849616, 476.28375287590967, 492.4707505723215,
+495.8830805221321, 489.587272975166, 476.1227874403849,
+457.52223065643506, 435.401773235322, 411.0363985045708,
+385.4224317689256, 359.32941329274695, 333.34305276967075,
+307.9007278636197, 283.3207569008024, 259.8264794483179,
+237.56601279737757, 216.6284125806476, 197.05684790773148,
+178.8593021189776, 162.01722666814496, 146.49250531808917,
+132.2330267105815, 119.17711370654747, 107.2570162087622,
+96.40163922455253, 86.53864864309966, 77.59607269552609,
+69.50349657956863, 62.19293062510825, 55.59941811238606,
+49.66143697583751, 44.321139748857554, 39.52446790453587,
+35.22116995157074, 31.364747023425977, 27.912345059041957,
+24.82460885255677, 22.065510111040066, 19.602159088633968,
+17.40460726667521, 15.445646841872664, 13.700611401094465,
+12.147181045491262, 10.765194331547942, 9.536468683027104,
+8.444630363010981, 7.474954652230843, 6.6142165360701854,
+5.850551939377013, 5.173329350082545, 4.573031526860214,
+4.0411468821781105, 3.5700700614847785, 3.153011194866838,
+2.783913273566475, 2.45737709556323, 2.1685932282114524,
+1.9132804486224144, 1.6876301416338075, 1.4882561588631769,
+1.3121496689483614, 1.1566385574238864, 1.019350963826532,
+0.8981825728459003, 0.7912673050953205, 0.6969510809771124,
+0.6137683578710074, 0.5404211662937323, 0.475760394641245,
+0.4187690945690003, 0.3685475999689417, 0.3243002718765952,
+0.2853236995238248, 0.2509962041963214, 0.2207685076257595,
+0.1941554404188069, 0.1707285785775421, 0.1501097075791376,
+0.1319650238378495, 0.1159999927490646, 0.1019547909905284,
+0.0896002684039383, 0.0787343716710682, 0.069178978198718,
+0.0607770941980497, 0.0533903759440118, 0.0468969376830547,
+0.041189413671568, 0.0361732454188178, 0.0317651684182048,
+0.02789187551742, 0.0244888366361632, 0.0214992568210034,
+0.0188731566592585, 0.0165665608833202, 0.0145407826070214,
+0.0127617920675291, 0.0111996600188469, 0.0098280670534272,
+0.0086238711319799, 0.007566726492109, 0.0066387478962753,
+0.0058242148798237, 0.0051093112803453, 0.0044818958793017,
+0.0039313004735315, 0.0034481521250337, 0.0030242167185704,
+0.0026522612937485, 0.0023259329163151, 0.0020396521168773,
+0.001788519158069, 0.0015682315968544, 0.0013750117902853,
+0.0012055431533891, 0.0010569141194064, 0.0009265688775015,
+0.0008122640732602, 0.0007120307544854, 0.0006241409305027,
+0.0005470781887567, 0.0004795118790765, 0.0004202744346901,
+0.0003683414507807, 0.0003228141869419, 0.0002829042000103,
+0.0002479198490971, 0.0002172544457498, 0.0001903758495652,
+0.0001668173336845, 0.0001461695658153, 0.0001280735690953,
+0.0001122145435357, 9.831644323152224e-05, 8.613721723134827e-05,
+7.546463313780093e-05, 6.611261233303677e-05, 5.791801436637374e-05,
+5.073781563483407e-05, 4.4446634164128736e-05, 3.893455816531168e-05,
+3.410524119896122e-05, 2.987423130993119e-05, 2.6167505476909897e-05,
+2.292018421862766e-05, 2.007540427101195e-05, 1.7583329948317797e-05,
+1.540028617150579e-05, 1.3487998228691326e-05, 1.1812925160353852e-05,
+1.0345675266951564e-05, 9.060493645704288e-06, 7.934812900381254e-06,
+6.948859253882172e-06, 6.085307246617104e-06, 5.328977040335856e-06,
+4.6665690813332095e-06, 4.08643152134313e-06, 3.578356359898016e-06,
+3.133400768101717e-06, 2.743730489109817e-06, 2.4024825925603596e-06,
+2.1036451952811173e-06, 1.8419520545488096e-06, 1.6127901980254913e-06,
+1.4121189806682626e-06, 1.236399157281266e-06, 1.0825307333609942e-06
+];
+        const bud900 = [
+63.0, 58.87499999999996, 70.4762043856435, 87.70656560073087, 109.64135497761072,
+135.29242290455048, 164.90060601209817, 198.6974975969281, 236.42972031239805,
+278.6029090017821, 323.820949819456, 370.0451904760937, 414.21743360045207,
+453.3668152696337, 485.1757457914686, 506.0773104151332, 513.7785514822596,
+510.37986529184985, 498.71692448311666, 481.06405951079665, 459.23398114743526,
+434.66081556871035, 408.4691411066537, 381.5312934546355, 354.5148489039316,
+327.9218931890478, 302.12142831022345, 277.37605414556566, 253.8638796980442,
+231.69646529636665, 210.93346761481615, 191.59455028910304, 173.66903103965566,
+157.12365890543342, 141.90885018145542, 127.96365702808878, 115.2196968589908,
+103.6042321453996, 93.04255803618122, 83.45982820362133, 74.78242675413674,
+66.93897518927086, 59.86104767295594, 53.48365475584551, 47.74554480451542,
+42.58936332665154, 37.96170287313485, 33.81306998169134, 30.097790492007075,
+26.77387033024376, 23.802825381595483, 21.149491216866515,
+18.781821107304292, 16.670678862502204, 14.789631484927389,
+13.114745389515424, 11.62438893600082, 10.299043222007713,
+9.121122450405592, 8.074804685089623, 7.145873420297472,
+6.321570089198048, 5.590457410709231, 4.942293305222806,
+4.367914988514724, 3.859132769045903, 3.408633019282751,
+3.0098897601874812, 2.6570842844341107, 2.3450322439684723,
+2.0691176378340916, 1.82523315398627, 1.6097263419220766,
+1.4193511196253237, 1.251224147195164, 1.102785629529773,
+0.9717641407534126, 0.8561450930862599, 0.7541425021022122,
+0.664173728469494, 0.5848369030937144, 0.5148907679352063,
+0.4532366885674821, 0.398902616745841, 0.3510288018662918,
+0.3088550692447316, 0.2717095006849058, 0.238998368895663,
+0.2101971920377369, 0.1848427881079042, 0.1625262210871742,
+0.1428865418736415, 0.1256052370728912, 0.1104013078103125,
+0.0970269089381944, 0.0852634864102095, 0.0749183572568956,
+0.0658216825837514, 0.0578237893898977, 0.0507928018268306,
+0.044612546836194, 0.0391807029711417, 0.0344071646621535,
+0.0302125972757311, 0.0265271610702762, 0.0232893846113586,
+0.0204451703991105, 0.0179469174113689, 0.0157527470025025,
+0.0138258201422366, 0.0121337353516401, 0.0106479979131277,
+0.0093435520143661, 0.0081983684471812, 0.0071930813352358,
+0.0063106681202903, 0.0055361677069332, 0.0048564322592916,
+0.0042599086689301, 0.0037364461784996, 0.0032771270574892,
+0.0028741175907048, 0.002520536962211, 0.0022103419022298,
+0.0019382252161326, 0.001699526536986, 0.0014901538394655,
+0.0013065144263347, 0.0011454542517306, 0.0010042045805681,
+0.0008803351025432, 0.0007717127243362, 0.0006764653563179,
+0.0005929500917984, 0.0005197252489124, 0.0004555258087316,
+0.0003992418391544, 0.0003498995434152, 0.0003066446154783,
+0.0002687276228207, 0.0002354911707771, 0.0002063586322663,
+0.000180824252807, 0.0001584444636981, 0.0001388302564432,
+0.0001216404892799, 0.0001065760123131, 9.33745115110058e-05,
+8.180598391815272e-05, 7.16687670821173e-05, 6.278605504291012e-05,
+5.500284145916701e-05, 4.818323767387457e-05, 4.220811987644319e-05,
+3.69730651020046e-05, 3.2386540715782734e-05, 2.83683163419059e-05,
+2.484807098396425e-05, 2.1764171412222944e-05, 1.906260081534155e-05,
+1.6696019281692265e-05, 1.462293992999651e-05, 1.280700648890333e-05,
+1.1216359863638738e-05, 9.82308275426817e-06, 8.60271273019975e-06,
+7.533815341966291e-06, 6.597609883970373e-06, 5.777641328259673e-06,
+5.059492744900588e-06, 4.430533222650904e-06, 3.879696916273447e-06,
+3.3972893844140434e-06, 2.9748178536549527e-06, 2.604842458198939e-06,
+2.28084586771052e-06, 1.9971190343493754e-06, 1.74866106942942e-06,
+1.531091505213928e-06, 1.340573412316347e-06, 1.1737460317089404e-06
+];
+        const vac0 = [
+63.0, 58.87499999999996, 70.4762043856435, 92.466688574659, 124.53248079324788,
+168.66976640513937, 228.3319131132852, 308.2431248162223, 414.4453799956856,
+554.4128169843884, 737.1769435975727, 973.4702003998945, 1275.9321296710716,
+1659.3832652721023, 2140.9912139379385, 2739.8623675765775, 3475.375345205942,
+4363.591318862884, 5411.322231178596, 6608.004624902031, 7916.84889038249,
+9269.064556228815, 10567.167720477912, 11702.09663016738, 12581.043805382924,
+13152.489797155777, 13413.700286104771, 13398.825342290109, 13159.30788304866,
+12748.521278336282, 12214.09047667915, 11595.610002475876, 10924.846225330111,
+10226.7474715514, 9520.577216800288, 8820.949629448825, 8138.716746195579,
+7481.710179619236, 6855.354489572785, 6263.1713349588945, 5707.192001681091,
+5188.293586296821, 4706.471817674362, 4261.061444490699, 3850.9133441958143,
+3474.536002635376, 3130.207741616093, 2816.065001601654, 2530.171088390667,
+2270.569039697153, 2035.321637361036, 1822.5410641377205, 1630.410264256519,
+1457.197700320187, 1301.266893915947, 1161.081883624631, 1035.209523603018,
+922.3193715429052, 821.1817706588679, 730.6646114446977, 649.7291610800669,
+577.4252680483196, 512.8861837934585, 455.32318962623543, 404.0201735146897,
+358.32826613068517, 317.6606171230691, 281.4873698414459,
+249.33087463484068, 220.76116655823355, 195.3917221401548,
+172.87550121802315, 152.90127325575284, 135.19022262449744,
+119.49282372570345, 105.5859742972469, 93.27037354782762,
+82.3681307315682, 72.7205892567822, 64.18635130055873,
+56.63948807744232, 49.9679213081653, 44.071961990758055,
+38.86299324181232, 34.262284711046625, 30.19992684701443,
+26.61387408213544, 23.44908679319973, 20.65676266560783,
+18.19364883605008, 16.02142690218047, 14.1061635645054,
+12.41782030239888, 10.929816081497092, 9.618637643423462,
+8.463492441372766, 7.445999757668077, 6.549915973554557,
+5.760890359067177, 5.066248113848586, 4.454797720450491,
+3.9166599721169217, 3.4431163095040525, 3.0264743473749705,
+2.6599486950845863, 2.3375553756125496, 2.054018328881454,
+1.8046866478724728, 1.5854613422654762, 1.3927305555145204,
+1.2233122788377444, 1.074403710857439, 0.9435365057698276,
+0.8285372370518883, 0.7274924788261435, 0.6387179740159362,
+0.560731418162177, 0.4922284409894389, 0.4320614151846291,
+0.379220763999736, 0.3328184767654128, 0.2920735747034949,
+0.2562992990027627, 0.2248918193764803, 0.1973202846141522,
+0.1731180572976497, 0.1518749931635286, 0.1332306418185095,
+0.1168682598856168, 0.1025095403814073, 0.0899099733847738,
+0.0788547630196225, 0.0691552345839748, 0.0606456734472912,
+0.0531805442222186, 0.0466320447998009, 0.040887955210224,
+0.0358497460159118, 0.031430915132576, 0.0275555256708544,
+0.024156920653358, 0.0211765933397558, 0.0185631944306516,
+0.0162716596590557, 0.0142624432512763, 0.0125008444780716,
+0.0109564160493697, 0.0096024444560438, 0.0084154935515884,
+0.0073750037140486, 0.0064629398509608, 0.0056634823221786,
+0.0049627555703456, 0.0043485898779896, 0.0038103122239183,
+0.0033385626987991, 0.0029251333684197, 0.0025628268501508,
+0.0022453321997301, 0.0019671159970956, 0.0017233267764008,
+0.0015097111707722, 0.0013225403405411, 0.0011585454278593,
+0.0010148609337016, 0.0008889750477814, 0.0007786860801178,
+0.0006820642468487, 0.0005974181541249, 0.0005232654040657,
+0.0004583068171558, 0.0004014038272864, 0.0003515586599396,
+0.0003078969516913, 0.0002696525110696, 0.0002361539575558,
+0.0002068130077833, 0.0001811142063087, 0.0001586059231921,
+0.0001388924624405, 0.000121627144521
+];
+        const vac2500 = [
+63.0, 58.87499999999996, 70.4762043856435, 89.1851443686136, 114.4555291920504,
+147.12422406278034, 188.67393268248125, 238.1300689291949, 296.0695113347394,
+364.00810082717294, 444.64930141190007, 540.8770841361307, 651.7117045350253,
+778.062017242949, 917.4574158312258, 1067.0596718768395, 1222.2009870887678,
+1373.666607122021, 1514.5026872358574, 1630.2087712055877, 1716.694167353918,
+1756.8751750406768, 1756.9103635644829, 1726.8133956345275, 1674.6249220876048,
+1606.768493199063, 1528.3430933491743, 1443.364220626108, 1354.9629923279126,
+1265.5507958950443, 1176.955490474668, 1090.146521011341, 1006.0391376782256,
+924.9936155769924, 847.6917308657639, 774.577964995454, 705.9108912178026,
+641.8050342556747, 582.264837350942, 527.2121032911253, 476.5080509017787,
+429.97093927223693, 387.39005306307627, 348.5367088872223, 313.1728309537743,
+281.0575505223708, 251.95220536806164, 225.62404997790009, 201.84893254281644,
+180.4131492425248, 161.11464838797528, 143.76372545442072, 128.18332387114015,
+114.2090347574094, 101.68887087287186, 90.48287526531028, 80.46261292990141,
+71.51058380459654, 63.519587249821456, 56.392061489993395, 50.03941607208673,
+44.38137100736949, 39.34531272655706, 34.86567414583067, 30.883343886253183,
+27.34510790788699, 24.20312542575721, 21.41443989584278, 18.940525035981196,
+16.7468652297282, 14.80256921022188, 13.080015602552464, 11.554528689611969,
+10.20408263544923, 9.00903233347987, 7.951869029619288, 7.016998890480643,
+6.19054273451094, 5.46015521156025, 4.814861797712228, 4.244912062367064,
+3.741647759744495, 3.2973843942107015, 2.9053050058780214, 2.559365018094976,
+2.254207080505997, 1.9850849294480832, 1.7477953709859315, 1.5386175705145702,
+1.3542589064018593, 1.191806713560151, 1.048685306186724, 0.922617727331891,
+0.8115917266312678, 0.7138295167016705, 0.6277609035990859, 0.5519994276364494,
+0.4853211880281068, 0.4266460585356337, 0.3750210317995711, 0.329605457608246,
+0.289657965221748, 0.2545248822672003, 0.2236299828679467, 0.1964654157672931,
+0.1725836794459584, 0.1515905257862796, 0.1331386868667655, 0.1169223311259376,
+0.1026721655502107, 0.0901511098407332, 0.0791504768114691, 0.0694866006678877,
+0.0609978614054179, 0.0535420594334688, 0.0469940997503379, 0.0412439496353051,
+0.0361948379484001, 0.0317616677912856, 0.0278696175343196, 0.0244529080999108,
+0.0214537169508916, 0.0188212215007184, 0.0165107566720042, 0.014483073109897,
+0.0127036841327828, 0.011142290897576, 0.0097722764908571, 0.0085702607484811,
+0.0075157085711906, 0.0065905853565942, 0.0057790539214221, 0.005067207953589,
+0.0044428376214001, 0.003895223486162, 0.0034149553224806, 0.0029937728546752,
+0.0026244257742733, 0.0023005507180028, 0.0020165631629784, 0.0017675624402284,
+0.0015492482831618, 0.0013578475174482, 0.0011900496660657, 0.0010429503906349,
+0.0009140018199432, 0.0008009689308541, 0.0007018912474148, 0.0006150492125601,
+0.0005389346647662, 0.0004722249206214, 0.0004137600246446, 0.0003625227807933,
+0.0003176212268192, 0.0002782732537169, 0.0002437931086452, 0.0002135795514728,
+0.0001871054630314, 0.0001639087277177, 0.0001435842346661, 0.0001257768606868,
+0.000110175314833, 9.650673910639332e-05, 8.453197268448972e-05,
+7.404139835583899e-05, 6.485129978156808e-05, 5.680066692619408e-05,
+4.974839466098152e-05, 4.357082627169744e-05, 3.815959951059691e-05,
+3.341975801993944e-05, 2.926809550873313e-05, 2.5631704062672444e-05,
+2.244670147700779e-05, 1.965711558281272e-05, 1.7213906241044768e-05,
+1.5074108051843e-05, 1.3200078909015909e-05, 1.1558841357091736e-05,
+1.0121505311771969e-05, 8.8627621115005e-06
+];
+        const vac5000 = [
+63.0, 58.87499999999996, 70.4762043856435, 87.41885926007576, 108.0543649140668,
+132.48382473098624, 160.89030013903383, 192.90987041782083, 228.07511411428783,
+265.734883743839, 304.2242059924015, 340.74016220106563, 373.02550027841255,
+398.5685286793072, 416.3378676640468, 424.7555174619512, 424.31668847708386,
+416.41048301562785, 403.04492743711427, 385.8235299061376, 366.0177758667238,
+344.62742862525806, 322.4306069687075, 300.0253013161391, 277.8637274103533,
+256.28069470582903, 235.51697920054596, 215.7385322287167, 197.05222321004644,
+179.51870174586426, 163.16286954512282, 147.9823727241182, 133.9544577382911,
+121.04147761073718, 109.19528755773706, 98.36072916874166, 88.47836878469612,
+79.4866276255067, 71.32341769137346, 63.92737778199901, 57.23878753243247,
+51.20022363932123, 45.75701101164284, 40.85751205853325, 36.453289414084374,
+32.49917083406768, 28.95323956273249, 25.77676897418232, 22.934116586802148,
+20.392589500074127, 18.12229080109821, 16.095954441132378, 14.288774413280631,
+12.678232706440392, 11.243929413695204, 9.967417490320326, 8.832043949747733,
+7.822798723787079, 6.926171969963246, 6.130020262274601, 5.4234418339675,
+4.79666083713061, 4.24092043169704, 3.748384405627272, 3.312046950260174,
+2.9256501631944887, 2.5836088199810385, 2.280941940785575, 2.0132106753035206,
+1.7764620355615597, 1.5671780194057765, 1.382229685513835, 1.2188357621392742,
+1.0745253952844391, 0.9471046666560902, 0.8346265368516838, 0.7353638941974563,
+0.647785414096117, 0.5705339573398244, 0.5024072583915364, 0.4423406759947576,
+0.3893917985544099, 0.3427267154999634, 0.3016077832894862, 0.2653827308586018,
+0.2334749641986777, 0.2053749434144725, 0.1806325181224887, 0.1588501184727423,
+0.1396767094769905, 0.1228024257752305, 0.1079538125386384, 0.0948896059587187,
+0.0833969937745161, 0.0732883026046764, 0.0643980645379274, 0.0565804205496883,
+0.049706822905836, 0.0436640028353426, 0.0383521734461271, 0.0336834411641061,
+0.0295804019318027, 0.0259749010445073, 0.0228069378603838, 0.0200236987247843,
+0.0175787033244278, 0.0154310513576528, 0.0135447578940421, 0.0118881671196547,
+0.0104334353402989, 0.0091560751604195, 0.0080345536833597, 0.0070499384026476,
+0.0061855851849235, 0.0054268633933282, 0.0047609137747508, 0.0041764352434115,
+0.0036634971441319, 0.0032133739778126, 0.002818399924898, 0.0024718408151245,
+0.0021677814682386, 0.0019010265747128, 0.0016670135014485, 0.0014617355982602,
+0.0012816747494714, 0.0011237420637822, 0.0009852257269477, 0.0008637451577692,
+0.0007572107102108, 0.0006637882547169, 0.0005818680514051, 0.0005100373980032,
+0.0004470565972733, 0.000391837843203, 0.0003434266733074, 0.0003009856767195,
+0.0002637801850515, 0.0002311657058531, 0.0002025768874212, 0.000177517829179,
+0.0001555535742621, 0.0001363026406768, 0.0001194304647615, 0.0001046436459543,
+9.168489531402828e-05, 8.032860206032374e-05, 7.037694279753957e-05,
+6.165646722906679e-05, 5.401510220933605e-05, 4.731952304794267e-05,
+4.145284719389869e-05, 3.631261088918893e-05, 3.1808994180492506e-05,
+2.7863263895747137e-05, 2.4406407898335452e-05, 2.137793718780643e-05,
+1.8724835276555972e-05, 1.6400636784608207e-05, 1.4364619401636522e-05,
+1.258109530366424e-05, 1.1018789814048166e-05, 9.650296593013832e-06,
+8.45159995236283e-06, 7.401656044153813e-06, 6.482025683637161e-06,
+5.676552454613297e-06, 4.9710805247273e-06, 4.353207282228388e-06,
+3.8120665060286993e-06, 3.338138307699847e-06, 2.92308254631571e-06,
+2.5595928226648273e-06, 2.241268515236222e-06, 1.9625026326069784e-06,
+1.7183835307670634e-06, 1.5046087841948583e-06, 1.3174097102622246e-06,
+1.1534852314152104e-06, 1.0099439217189635e-06, 8.842532265589391e-07
+];
+        const vac10000 = total_I = [
+63.0, 58.87499999999996, 70.4762043856435, 86.35648533267074, 104.39693638639632,
+123.36523635558784, 143.73732537183844, 164.61531324332566, 184.88136881788563,
+200.91204341811712, 209.9695493657858, 213.01322258786257, 211.4921699582085,
+206.57473459385685, 199.19782352427436, 190.10803623058263, 179.89590939905335,
+169.0243873218519, 157.8524531332034, 146.65470868576696, 135.6375662665153,
+124.95261005446014, 114.7075962873035, 104.97548602823407, 95.80184108342792,
+87.21086021261918, 79.21028777000156, 71.79538901357405, 64.95215442815389,
+58.65986858858601, 52.893156555542475, 47.62360187798232, 42.82101440770534,
+38.45441283343145, 34.49277570927189, 30.905605442772373, 27.663341931419673,
+24.737656049129768, 22.101647779392177, 19.72996929531413, 17.598889551982122,
+15.686313859626292, 13.971769342866104, 12.436365074173343, 11.062733924900678,
+9.834961742858669, 8.738508289490397, 7.760123408580439, 6.887761115601891,
+6.110493661660802, 5.418427112961044, 4.802619574419062, 4.255002856683665,
+3.7683081245127665, 3.3359958588754353, 2.9521903050246614, 2.611618455618283,
+2.309553524713174, 2.041762799307321, 1.804459705265299, 1.5942598899969036,
+1.4081411019385202, 1.2434066340744, 1.0976520932821252, 0.9687352574507384,
+0.8547487866941486, 0.7539955624357402, 0.6649664377698665, 0.5863201935959996,
+0.5168655070085278, 0.4555447508713435, 0.4014194560743238, 0.3536572804038033,
+0.3115203400722735, 0.27435477160805, 0.2415814029097385, 0.2126874227626167,
+0.1872189479600858, 0.1647743963589004, 0.144998582723031, 0.1275774620903604,
+0.1122334526499583, 0.098721276772336, 0.0868242649217561, 0.076351072731647,
+0.0671327665760001, 0.059020237556122, 0.0518819079777112, 0.045601698151444,
+0.040077224743325, 0.0352182049596764, 0.0309450436048028, 0.0271875825242761,
+0.0238839941688048, 0.0209798030063298, 0.0184270202950747, 0.0161833793277928,
+0.0142116596857637, 0.0124790903169961, 0.0109568223919025, 0.0096194639053699,
+0.008444668899303, 0.0074127749858368, 0.0065064835688471, 0.0057105777995184,
+0.005011673868959, 0.004398001744808, 0.0038592119062518, 0.0033862050290087,
+0.0029709819241297, 0.0026065113468254, 0.0022866135683681, 0.0020058578493757,
+0.001759472169964, 0.001543263764513, 0.0013535491789156, 0.0011870927186654,
+0.0010410522892159, 0.0009129317476786, 0.0008005389888884, 0.0007019490807085,
+0.0006154718445609, 0.0005396233487973, 0.0004731008457461, 0.0004147607390694,
+0.0003635992172928, 0.0003187352327943, 0.0002793955438349, 0.0002449015709754,
+0.000214657848992, 0.0001881418816295, 0.00016489522965, 0.000144515682993,
+0.000126650385804, 0.00011098979888, 9.726239799281408e-05, 8.523001879177309e-05,
+7.468376976971077e-05, 6.544044425727635e-05, 5.7339370761213426e-05,
+5.023964830414456e-05, 4.40177198844832e-05, 3.856524285751426e-05,
+3.378722003626053e-05, 2.960035970538699e-05, 2.5931636605349937e-05,
+2.271702934094089e-05, 1.990041265440302e-05, 1.7432585627813853e-05,
+1.5270419185946724e-05, 1.337610829765448e-05, 1.1716516054691458e-05,
+1.026259837149256e-05, 8.988899423888167e-06, 7.873109152044007e-06,
+6.8956752133029605e-06, 6.0394627018667685e-06, 5.289455770042001e-06,
+4.632496003851245e-06, 4.057053036282264e-06, 3.5530234349576324e-06,
+3.111554386911342e-06, 2.7248891296817783e-06, 2.386231452301003e-06,
+2.0896269183314756e-06, 1.8298587514555545e-06, 1.6023565771654764e-06,
+1.4031164361413932e-06, 1.228630679727949e-06, 1.0758265288512942e-06,
+9.420122276786022e-07, 8.248298548762506e-07, 7.222139707231255e-07,
+6.323553795596541e-07, 5.536693758377716e-07, 4.847679199063991e-07,
+4.244352579595414e-07, 3.716065604644061e-07, 3.253492059061903e-07,
+2.848463827392037e-07, 2.493827228150494e-07
+];
+
+        // Calculate cumulative cases
+        function cumsum(arr) {
+            return arr.reduce((acc, val, i) => {
+                acc.push(i === 0 ? val : acc[i-1] + val);
+                return acc;
+            }, []);
+        }
+
+        const observedCum = cumsum(observedDaily);
+        const predictedCum = cumsum(predictedDaily);
+        const days = Array.from({length: observedDaily.length}, (_, i) => i);
+
+        // Validation Chart
+        const validationCtx = document.getElementById('validationChart').getContext('2d');
+        new Chart(validationCtx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Observed Daily Cases',
+                        data: observedDaily,
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(220, 38, 38, 1)',
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Model Fit Daily',
+                        data: predictedDaily,
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        backgroundColor: 'rgba(37, 99, 235, 0)',
+                        borderWidth: 3,
+                        borderDash: [8, 4],
+                        pointRadius: 0,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Observed Cumulative',
+                        data: observedCum,
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        pointRadius: 2,
+                        borderWidth: 2,
+                        yAxisID: 'y1',
+                        hidden: true
+                    },
+                    {
+                        label: 'Model Fit Cumulative',
+                        data: predictedCum,
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0)',
+                        borderWidth: 3,
+                        borderDash: [8, 4],
+                        pointRadius: 0,
+                        yAxisID: 'y1',
+                        hidden: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Model Validation: Observed vs. Fitted Data',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: {
+                        position: 'top',
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.datasetIndex;
+                            const chart = legend.chart;
+                            const meta = chart.getDatasetMeta(index);
+                            
+                            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+                            
+                            // Toggle paired dataset
+                            if (index < 2) {
+                                const pairedIndex = index + 2;
+                                chart.getDatasetMeta(pairedIndex).hidden = !meta.hidden;
+                            } else {
+                                const pairedIndex = index - 2;
+                                chart.getDatasetMeta(pairedIndex).hidden = !meta.hidden;
+                            }
+                            
+                            chart.update();
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return 'Day ' + context[0].label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Days Since Outbreak Start', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Daily New Cases', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Cumulative Cases', font: { size: 12 } },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+
+        // Create SEIR charts for each strategy
+        function createSEIRCharthighRisk(canvasId, title, scenario, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const days = Array.from({length: 180}, (_, i) => i);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Susceptible (S)',
+                            data: highRiskS,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Exposed (E)',
+                            data: highRiskE,
+                            borderColor: 'rgba(251, 191, 36, 1)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Infectious (I)',
+                            data: highRiskI,
+                            borderColor: 'rgba(248, 113, 113, 1)',
+                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Recovered (R)',
+                            data: highRiskR,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: { size: 14, weight: 'bold', family: 'system-ui' },
+                            color: '#1e3a8a'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Days', font: { size: 11 } },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Population', font: { size: 11 } },
+                            beginAtZero: true,
+                            grid: { color: '#e5e7eb' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSEIRChartrl(canvasId, title, scenario, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const days = Array.from({length: 180}, (_, i) => i);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Susceptible (S)',
+                            data: rlS,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Exposed (E)',
+                            data: rlE,
+                            borderColor: 'rgba(251, 191, 36, 1)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Infectious (I)',
+                            data: rlI,
+                            borderColor: 'rgba(248, 113, 113, 1)',
+                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Recovered (R)',
+                            data: rlR,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: { size: 14, weight: 'bold', family: 'system-ui' },
+                            color: '#1e3a8a'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Days', font: { size: 11 } },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Population', font: { size: 11 } },
+                            beginAtZero: true,
+                            grid: { color: '#e5e7eb' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSEIRChartuniform(canvasId, title, scenario, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const days = Array.from({length: 180}, (_, i) => i);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Susceptible (S)',
+                            data: uniformS,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Exposed (E)',
+                            data: uniformE,
+                            borderColor: 'rgba(251, 191, 36, 1)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Infectious (I)',
+                            data: uniformI,
+                            borderColor: 'rgba(248, 113, 113, 1)',
+                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Recovered (R)',
+                            data: uniformR,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: { size: 14, weight: 'bold', family: 'system-ui' },
+                            color: '#1e3a8a'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Days', font: { size: 11 } },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Population', font: { size: 11 } },
+                            beginAtZero: true,
+                            grid: { color: '#e5e7eb' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSEIRChartnoVaccine(canvasId, title, scenario, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const days = Array.from({length: 180}, (_, i) => i);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Susceptible (S)',
+                            data: noVaccineS,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Exposed (E)',
+                            data: noVaccineE,
+                            borderColor: 'rgba(251, 191, 36, 1)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Infectious (I)',
+                            data: noVaccineI,
+                            borderColor: 'rgba(248, 113, 113, 1)',
+                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Recovered (R)',
+                            data: noVaccineR,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: { size: 14, weight: 'bold', family: 'system-ui' },
+                            color: '#1e3a8a'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Days', font: { size: 11 } },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Population', font: { size: 11 } },
+                            beginAtZero: true,
+                            grid: { color: '#e5e7eb' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Baseline strategies SEIR
+        createSEIRChartrl('seirRL', 'RL Strategy', 'rl', 'rgba(30, 58, 138, 1)');
+        createSEIRChartuniform('seirUniform', 'Uniform Distribution', 'uniform', 'rgba(234, 88, 12, 1)');
+        createSEIRCharthighRisk('seirHighRisk', 'High-Risk Targeting', 'highRisk', 'rgba(22, 163, 74, 1)');
+        createSEIRChartnoVaccine('seirNoVaccine', 'No Vaccination (Control)', 'noVaccine', 'rgba(220, 38, 38, 1)');
+
+        // Peak Comparison Chart
+        const peakCtx = document.getElementById('peakComparisonChart').getContext('2d');
+        new Chart(peakCtx, {
+            type: 'bar',
+            data: {
+                labels: ['RL', 'High Risk', 'Uniform', 'No Vaccine'],
+                datasets: [{
+                    label: 'Peak Infections',
+                    data: [432, 717, 7114, 13414],
+                    backgroundColor: [
+                        'rgba(30, 58, 138, 0.8)',
+                        'rgba(22, 163, 74, 0.8)',
+                        'rgba(234, 88, 12, 0.8)',
+                        'rgba(220, 38, 38, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(30, 58, 138, 1)',
+                        'rgba(22, 163, 74, 1)',
+                        'rgba(234, 88, 12, 1)',
+                        'rgba(220, 38, 38, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Peak Infections by Vaccination Strategy',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Peak Infections', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Hesitancy Infections Chart - showing infection curves at different hesitancy levels
+        const hesitancyInfectionsCtx = document.getElementById('hesitancyInfectionsChart').getContext('2d');
+        const hesitancyConfigs = {
+            h0: { peak: 450, peakDay: 15, width: 8 },
+            h20: { peak: 600, peakDay: 17, width: 10 },
+            h30: { peak: 800, peakDay: 19, width: 12 },
+            h50: { peak: 1400, peakDay: 22, width: 15 }
+        };
+
+        const days180 = Array.from({length: 180}, (_, i) => i);
+
+        new Chart(hesitancyInfectionsCtx, {
+            type: 'line',
+            data: {
+                labels: days180,
+                datasets: [
+                    {
+                        label: '0% Hesitancy',
+                        data: hes0,
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '20% Hesitancy',
+                        data: hes2,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '30% Hesitancy',
+                        data: hes3,
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '50% Hesitancy',
+                        data: hes5,
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Active Infections Under Varying Vaccine Hesitancy (RL Strategy)',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Days', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    }
+                }
+            }
+        });
+
+        // Budget Peak Chart
+        const budgetPeakCtx = document.getElementById('budgetPeakChart').getContext('2d');
+        new Chart(budgetPeakCtx, {
+            type: 'line',
+            data: {
+                labels: ['200k', '450k', '700k', '900k', '1,200k'],
+                datasets: [
+                    {
+                        label: 'RL',
+                        data: [4383, 902, 496, 514, 511],
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: 'Uniform',
+                        data: [7175, 7075, 7109, 7087, 7030],
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: 'High Risk',
+                        data: [677, 703, 682, 705, 670],
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Peak Infections vs. Total Vaccine Budget',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Total Vaccine Budget', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Peak Infections', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    }
+                }
+            }
+        });
+
+        // Budget Infections Chart
+        const budgetInfectionsCtx = document.getElementById('budgetInfectionsChart').getContext('2d');
+        const budgetConfigs = {
+            b200k: { peak: 4400, peakDay: 23, width: 16 },
+            b450k: { peak: 800, peakDay: 18, width: 11 },
+            b700k: { peak: 600, peakDay: 16, width: 9 },
+            b900k: { peak: 478, peakDay: 16, width: 8 }
+        };
+
+        new Chart(budgetInfectionsCtx, {
+            type: 'line',
+            data: {
+                labels: days180,
+                datasets: [
+                    {
+                        label: '200k Budget',
+                        data: bud200,
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '450k Budget',
+                        data: bud450,
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '700k Budget',
+                        data: bud700,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '900k Budget',
+                        data: bud900,
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Active Infections Under Budget Constraints (RL Strategy)',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Days', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    }
+                }
+            }
+        });
+
+        // Supply Infections Chart
+        const supplyInfectionsCtx = document.getElementById('supplyInfectionsChart').getContext('2d');
+        const supplyConfigs = {
+            s0: { peak: 13414, peakDay: 26, width: 20 },
+            s2500: { peak: 2000, peakDay: 20, width: 13 },
+            s5000: { peak: 478, peakDay: 16, width: 8 },
+            s10000: { peak: 250, peakDay: 14, width: 6 }
+        };
+
+        new Chart(supplyInfectionsCtx, {
+            type: 'line',
+            data: {
+                labels: days180,
+                datasets: [
+                    {
+                        label: '0 doses/day',
+                        data: vac0,
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '2,500 doses/day',
+                        data: vac2500,
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '5,000 doses/day',
+                        data: vac5000,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    },
+                    {
+                        label: '10,000 doses/day',
+                        data: vac10000,
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Active Infections Under Varying Daily Vaccine Supply (RL Strategy)',
+                        font: { size: 16, weight: 'bold', family: 'system-ui' },
+                        color: '#1e3a8a'
+                    },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Days', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
+                        grid: { color: '#e5e7eb' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
