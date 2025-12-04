@@ -497,9 +497,9 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-content">
-            <div class="kicker">Texas Measles Outbreak 2025</div>
+            <div class="kicker">Matthew Kim | BIO 176: Disease Ecology</div>
             <h1>Could AI Have Saved Texas From Measles?</h1>
-            <p class="hero-subtitle">When a measles outbreak hits, every vaccine counts. I tested if artificial intelligence could outsmart traditional strategies.</p>
+            <p class="hero-subtitle">When a measles outbreak hits, every vaccine counts. I tested if artificial intelligence could outsmart standard heuristic vaccine allocation strategies.</p>
         </div>
         <div class="scroll-indicator">
             <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
@@ -514,7 +514,7 @@
             <div class="section-number">01</div>
             <h2 class="section-title reveal">The Crisis</h2>
             <p class="large-text reveal">In 2025, Texas faced a measles outbreak. The virus is one of the most contagious diseases known to humanity.</p>
-            <p class="body-text reveal">Measles has a basic reproduction number (R₀) between 12 and 18—meaning one infected person can infect up to 18 others in a completely susceptible population. For context, SARS-CoV-2's R₀ was around 2.5-4.</p>
+            <p class="body-text reveal">Measles has a basic reproduction number (R₀) between 12 and 18, meaning one infected person can infect up to 18 others in a completely susceptible population. For context, SARS-CoV-2's original R₀ was around 2.5-4.</p>
             
             <div class="stats-grid reveal">
                 <div class="stat-card">
@@ -557,7 +557,7 @@
                 <div class="chart-wrapper">
                     <canvas id="validationChart"></canvas>
                 </div>
-                <p class="chart-caption">Model validation showing observed (points) versus fitted (lines) daily incidence. Pseudo-R² = 0.659, RMSE = 2.71 cases/day. <br> Click on the Legend items to see different data.</p>
+                <p class="chart-caption">Model validation showing observed (points) versus fitted (lines) daily incidence. Pseudo-R² = 0.659, RMSE = 2.71 cases/day. <br> Click on the Legend items to see select data.</p>
             </div>
 
             <div class="stats-grid reveal">
@@ -591,17 +591,17 @@
             <div class="strategy-grid">
                 <div class="strategy-card winner reveal">
                     <div class="strategy-name">🤖 RL Agent</div>
-                    <p class="body-text">A reinforcement learning algorithm using Q-Learning with ε-greedy exploration. It adapts based on the top-3 highest-risk counties and remaining budget, optimizing a reward function that prioritizes infection reduction: R = (I<sub>prev</sub> - I<sub>current</sub>) × 100 - I<sub>current</sub> + BudgetBonus</p>
+                    <p class="body-text">A reinforcement learning (RL) algorithm using Q-Learning with ε-greedy exploration. It adapts based on the top-3 highest-risk counties and remaining budget, optimizing a reward function that prioritizes infection reduction: R = (I<sub>prev</sub> - I<sub>current</sub>) × 100 - I<sub>current</sub> + BudgetBonus</p>
                 </div>
                 
                 <div class="strategy-card reveal">
                     <div class="strategy-name">🎯 High-Risk Targeting</div>
-                    <p class="body-text">Focus resources where the outbreak burns hottest. Prioritizes counties with the most active infections, allocating up to 50% of susceptible population per county.</p>
+                    <p class="body-text">Focuses resources where the outbreak burns hottest. Prioritizes counties with the most active infections, allocating up to 50% of susceptible population per county.</p>
                 </div>
                 
                 <div class="strategy-card reveal">
                     <div class="strategy-name">⚖️ Uniform Distribution</div>
-                    <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v<sub>i</sub> = V<sub>daily</sub> / n<sub>counties</sub></p>
+                    <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v<sub>i</sub> = v<sub>daily</sub> / n<sub>counties</sub></p>
                 </div>
             </div>
 
@@ -639,7 +639,7 @@
                 <p class="body-text" style="margin-top: 1rem; margin-bottom: 0;">This captures both local infections and the risk from connected counties. The mobility coupling constant (m<sub>ij</sub> = 0.002 for counties with &gt;10 cases).</p>
             </div>
 
-            <p class="body-text reveal"><strong>Baseline assumptions:</strong> 15% vaccine hesitancy (varying by county), 0.2% daily inter-county mobility, 5,000 vaccine doses per day, immediate vaccine effectiveness, and a 180-day simulation.</p>
+            <p class="body-text reveal"><strong>Baseline assumptions:</strong> 15% vaccine hesitancy (varying by county), 0.2% daily inter-county mobility, 5,000 vaccine doses per day, immediate vaccine effectiveness, and a 180-day simulation</p>
         </div>
     </section>
 
@@ -647,7 +647,7 @@
     <section class="story-section">
         <div class="container">
             <div class="section-number">05</div>
-            <h2 class="section-title reveal">The Results Are In</h2>
+            <h2 class="section-title reveal">The Baseline Simulation Results</h2>
             
             <div class="chart-container reveal">
                 <h3 class="chart-title">Peak Infections by Strategy</h3>
@@ -750,7 +750,7 @@
                 </div>
             </div>
 
-            <p class="body-text reveal" style="text-align: center;">The RL approach achieves rapid susceptible depletion through targeted allocation, while uniform distribution shows delayed but substantial peak infections.</p>
+            <p class="body-text reveal" style="text-align: center;">The RL approach achieves rapid susceptible depletion through targeted allocation, while uniform distribution shows delayed but substantial peak infections. High-Risk targeting mirrors the dynamics of RL. <br> Click on the Legend items to see select data.</p>
         </div>
     </section>
 
@@ -779,7 +779,7 @@
         <div class="container">
             <div class="section-number">08</div>
             <h2 class="section-title reveal">Stress Testing the AI</h2>
-            <p class="large-text reveal">We pushed the model to its limits with three experiments.</p>
+            <p class="large-text reveal">We analyzed robustness of the RL model with three additional experiments.</p>
             
             <ul class="findings-list">
                 <li class="finding-item reveal">
@@ -797,7 +797,7 @@
                 <li class="finding-item reveal">
                     <div class="finding-number">03</div>
                     <h3 class="callout-title">Daily Vaccine Supply</h3>
-                    <p class="body-text">Tested at 0, 2,500, 5,000, and 10,000 doses per day. RL maintained the lowest infections across all supply levels, but high supply rates led to diminishing returns, with High-Risk achieving similar effectiveness.</p>
+                    <p class="body-text">Tested at 0, 2,500, 5,000, and 10,000 doses per day. RL maintained the lowest infections across all supply levels, but high supply rates led to diminishing returns with High-Risk achieving similar effectiveness.</p>
                 </li>
             </ul>
 
@@ -806,7 +806,7 @@
                 <div class="chart-wrapper">
                     <canvas id="hesitancyChart"></canvas>
                 </div>
-                <p class="chart-caption">Active infection trajectories under varying vaccine hesitancy levels (RL strategy). Hesitancy reduces effective vaccination: ν_eff = ν(t) × (1 - h)</p>
+                <p class="chart-caption">Active infection trajectories under varying vaccine hesitancy levels (RL strategy). Hesitancy reduces effective vaccination: ν_eff = ν(t) × (1 - h). <br> Click on the Legend items to see select data.</p>
             </div>
 
             <div class="chart-container reveal">
@@ -814,7 +814,7 @@
                 <div class="chart-wrapper">
                     <canvas id="budgetPeakChart"></canvas>
                 </div>
-                <p class="chart-caption">RL shows nonlinear improvement with increasing budget. Note RL's poor performance at 200k budget.</p>
+                <p class="chart-caption">RL shows nonlinear improvement with increasing budget. Note RL's poor performance at 200k budget. <br> Click on the Legend items to see select data.</p>
             </div>
 
             <div class="chart-container reveal">
@@ -822,7 +822,7 @@
                 <div class="chart-wrapper">
                     <canvas id="budgetInfectionsChart"></canvas>
                 </div>
-                <p class="chart-caption">Active infection curves under different total vaccine budgets (RL strategy only).</p>
+                <p class="chart-caption">Active infection curves under different total vaccine budgets (RL strategy only). <br> Click on the Legend items to see select data.</p>
             </div>
 
             <div class="chart-container reveal">
@@ -830,23 +830,23 @@
                 <div class="chart-wrapper">
                     <canvas id="supplyChart"></canvas>
                 </div>
-                <p class="chart-caption">Active infections under varying daily vaccine supply rates (RL strategy). Diminishing returns above 5,000 doses/day.</p>
+                <p class="chart-caption">Active infections under varying daily vaccine supply rates (RL strategy). Diminishing returns above 5,000 doses/day. <br> Click on the Legend items to see select data.</p>
             </div>
         </div>
     </section>
 
-    <!-- The Verdict -->
+    <!-- The Answer -->
     <section class="story-section">
         <div class="narrow-container">
             <div class="section-number">09</div>
-            <h2 class="section-title reveal">The Verdict</h2>
+            <h2 class="section-title reveal">The Answer</h2>
             
             <div class="big-stat reveal">
                 <div class="stat-number" style="font-size: clamp(3rem, 8vw, 8rem);">Maybe</div>
                 <div class="stat-label">Could AI Have Saved Texas?</div>
             </div>
 
-            <p class="large-text reveal">AI can significantly reduce measles spread, even with substantial limitations—but it's not a silver bullet.</p>
+            <p class="large-text reveal">AI can significantly reduce measles spread, even with substantial limitations, but it's not a silver bullet</p>
 
             <div class="callout reveal">
                 <h3 class="callout-title">Key Takeaways</h3>
@@ -859,10 +859,10 @@
                 </div>
             </div>
 
-            <p class="large-text reveal">The answer depends on your priorities.</p>
-            <p class="body-text reveal">If minimizing peak infections is paramount and resources are abundant, RL shines. But if you're working with limited vaccines or care about efficiency, a well-designed heuristic like High-Risk targeting may be the better choice.</p>
+            <p class="large-text reveal">The true answer depends on priorities and limitations.</p>
+            <p class="body-text reveal">If minimizing peak infections is paramount and resources are abundant, RL performs best. However, if you're working with limited vaccines or care about vaccine efficiency, a heuristic like High-Risk targeting may be the better choice.</p>
 
-            <p class="body-text reveal">When hospital capacity is the limiting factor, RL's peak suppression approach is preferable despite lower technical efficiency. But the computational cost and training requirements may limit real-time deployment during actual outbreaks.</p>
+            <p class="body-text reveal">When hospital capacity is the limiting factor, RL's peak suppression approach is preferable despite lower vaccine efficiency. The computational cost and training requirements may limit real-time deployment during actual outbreaks.</p>
 
             <p class="large-text reveal" style="margin-top: 3rem;">AI is not a catch-all solution. It depends on the priorities of the vaccination program and the limitations at play.</p>
         </div>
@@ -872,7 +872,7 @@
     <section class="story-section pattern-bg">
         <div class="narrow-container">
             <p class="body-text reveal" style="text-align: center; font-style: italic;">
-                This analysis is based on multi-county SEIR modeling and reinforcement learning simulations calibrated to measles epidemiology. Model parameters were fitted using Poisson deviance minimization (Pseudo-R² = 0.659, RMSE = 2.71 cases/day). The RL agent uses Q-learning with ε-greedy exploration, training on outbreak dynamics over 180 days.
+                This analysis is based on multi-county SEIR modeling and reinforcement learning simulations fitted to the 2025 Texas measles outbreak data. Model parameters were fitted using Poisson deviance minimization via the Nelder-Mead algorithm (Pseudo-R² = 0.659, RMSE = 2.71 cases/day). The RL agent uses Q-learning with ε-greedy exploration, training on outbreak dynamics over 180 days.
             </p>
             <p class="body-text reveal" style="text-align: center; font-style: italic; margin-top: 2rem;">
                 For full methodology and technical details, visit this <a href="https://docs.google.com/presentation/d/1ha9UUDUwtG_ZGeaFXT8ejc4gUUxzhr-7BDN0nJvQjls/edit?usp=sharing" style="color: var(--blood-red); text-decoration: none;">slideshow</a>.
