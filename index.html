@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimizing Vaccine Distribution During a Texas Measles Outbreak: A Reinforcement Learning Approach</title>
+    <title>Can AI Save Texas? | Measles Outbreak 2025</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='35' fill='%23DC2626'/><circle cx='50' cy='50' r='25' fill='%23991B1B'/><circle cx='35' cy='35' r='8' fill='%23DC2626'/><circle cx='65' cy='35' r='8' fill='%23DC2626'/><circle cx='35' cy='65' r='8' fill='%23DC2626'/><circle cx='65' cy='65' r='8' fill='%23DC2626'/><circle cx='50' cy='20' r='8' fill='%23DC2626'/><circle cx='50' cy='80' r='8' fill='%23DC2626'/><circle cx='20' cy='50' r='8' fill='%23DC2626'/><circle cx='80' cy='50' r='8' fill='%23DC2626'/></svg>" type="image/svg+xml">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --blood-red: #DC2626;
+            --deep-blue: #1E3A8A;
+            --accent-orange: #EA580C;
+            --light-bg: #FAFAF9;
+            --dark-text: #171717;
+            --mid-gray: #737373;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,162 +24,393 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-            line-height: 1.65;
-            color: #1a1a1a;
-            background: #ffffff;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background: var(--light-bg);
+            overflow-x: hidden;
         }
 
-        .header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000000 0%, #1E3A8A 50%, #DC2626 100%);
             color: white;
-            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(220, 38, 38, 0.3) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .hero-content {
             text-align: center;
+            z-index: 2;
+            padding: 2rem;
+            max-width: 1200px;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .kicker {
+            font-size: 1rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
             margin-bottom: 1rem;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.3;
+            animation: fadeInUp 1s ease-out 0.2s both;
         }
 
-        .header .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
             max-width: 800px;
             margin: 0 auto;
-            font-weight: 300;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.6s both;
         }
 
-        .header .meta {
-            margin-top: 2rem;
-            font-size: 0.95rem;
-            opacity: 0.85;
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+        }
+
+        /* Scroll Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--blood-red);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        /* Story Sections */
+        .story-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem;
+            position: relative;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
+            width: 100%;
         }
 
-        .section {
-            padding: 3rem 0;
+        .narrow-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(0,0,0,0.03);
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 0;
         }
 
         .section-title {
-            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--deep-blue);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 6px;
+            background: var(--blood-red);
+            margin-top: 1rem;
+        }
+
+        .large-text {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 300;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            color: var(--dark-text);
+        }
+
+        .body-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
             margin-bottom: 1.5rem;
-            color: #1e3a8a;
-            border-bottom: 3px solid #3b82f6;
-            padding-bottom: 0.5rem;
+            color: var(--mid-gray);
         }
 
-        .section-subtitle {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem;
-            color: #2563eb;
+        /* Big Numbers */
+        .big-stat {
+            text-align: center;
+            padding: 4rem 0;
         }
 
-        .text-content {
-            max-width: 800px;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            color: var(--blood-red);
+            line-height: 1;
         }
 
-        .text-content p {
-            margin-bottom: 1.2rem;
+        .stat-label {
+            font-size: 1.5rem;
+            color: var(--mid-gray);
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
-        .abstract {
-            background: #f8fafc;
-            padding: 2rem;
-            border-left: 4px solid #3b82f6;
-            margin: 2rem 0;
-            font-style: italic;
-        }
-
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            gap: 2rem;
+            margin: 3rem 0;
         }
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            padding: 2rem;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--deep-blue);
         }
 
-        .stat-number {
-            font-size: 2.5rem;
+        .stat-card-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
             font-weight: 700;
-            color: #1e3a8a;
+            color: var(--blood-red);
             margin-bottom: 0.5rem;
         }
 
-        .stat-label {
-            font-size: 0.9rem;
-            color: #64748b;
+        .stat-card-label {
+            font-size: 0.95rem;
+            color: var(--mid-gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .chart-wrapper {
+        /* Chart Styles */
+        .chart-container {
             background: white;
-            padding: 2rem;
-            margin: 2rem 0;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            margin: 4rem 0;
         }
 
-        .chart-container {
+        .chart-wrapper {
             position: relative;
             height: 500px;
+            margin-top: 2rem;
+        }
+
+        .chart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--deep-blue);
+            margin-bottom: 1rem;
         }
 
         .chart-caption {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             font-size: 0.95rem;
-            color: #64748b;
+            color: var(--mid-gray);
             text-align: center;
             font-style: italic;
         }
 
+        /* Comparison Grid */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .strategy-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid var(--deep-blue);
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .strategy-card.winner {
+            border-top-color: var(--blood-red);
+            background: linear-gradient(to bottom, rgba(220,38,38,0.03) 0%, white 100%);
+        }
+
+        .strategy-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--deep-blue);
+        }
+
+        .strategy-card.winner .strategy-name {
+            color: var(--blood-red);
+        }
+
+        /* Callout Box */
+        .callout {
+            background: linear-gradient(135deg, rgba(30,58,138,0.05) 0%, rgba(220,38,38,0.05) 100%);
+            border-left: 6px solid var(--blood-red);
+            padding: 2.5rem;
+            margin: 3rem 0;
+            border-radius: 8px;
+        }
+
+        .callout-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--deep-blue);
+        }
+
+        /* Equation Display */
+        .equation-box {
+            background: var(--deep-blue);
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 3rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .equation {
+            font-size: 1.3rem;
+            line-height: 2;
+            text-align: center;
+        }
+
+        /* Interactive Elements */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Findings Section */
+        .findings-list {
+            list-style: none;
+            margin: 3rem 0;
+        }
+
+        .finding-item {
+            padding: 2rem;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            border-left: 6px solid var(--accent-orange);
+        }
+
+        .finding-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Comparison Table */
         .comparison-table {
             width: 100%;
-            margin: 2rem 0;
+            margin: 3rem 0;
             border-collapse: collapse;
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         .comparison-table th {
-            background: #f1f5f9;
-            padding: 1rem;
+            background: var(--deep-blue);
+            color: white;
+            padding: 1.2rem;
             text-align: left;
             font-weight: 600;
-            color: #1e3a8a;
-            border-bottom: 2px solid #cbd5e1;
         }
 
         .comparison-table td {
-            padding: 1rem;
+            padding: 1.2rem;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -185,262 +427,242 @@
             font-weight: 600;
         }
 
-        .methodology-box {
-            background: #f8fafc;
-            padding: 2rem;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            margin: 2rem 0;
+        /* Background Patterns */
+        .pattern-bg {
+            background-color: #FAFAF9;
+            background-image: 
+                linear-gradient(30deg, #F5F5F4 12%, transparent 12.5%, transparent 87%, #F5F5F4 87.5%, #F5F5F4),
+                linear-gradient(150deg, #F5F5F4 12%, transparent 12.5%, transparent 87%, #F5F5F4 87.5%, #F5F5F4);
+            background-size: 80px 140px;
         }
 
-        .methodology-box h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: #1e3a8a;
-        }
-
-        .methodology-box ul {
-            margin-left: 1.5rem;
-            line-height: 1.8;
-        }
-
-        .key-finding {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 4px;
-        }
-
-        .key-finding h3 {
-            color: #92400e;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
+        /* Two Column Layout */
         .two-column {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin: 2rem 0;
+            margin: 3rem 0;
         }
 
+        /* Footer */
         footer {
-            background: #1e293b;
+            background: var(--dark-text);
             color: white;
-            padding: 3rem 2rem;
-            margin-top: 4rem;
+            padding: 6rem 2rem 3rem;
             text-align: center;
         }
 
         footer a {
-            color: #60a5fa;
+            color: var(--blood-red);
             text-decoration: none;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        .author-credit {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .header h1 { font-size: 2rem; }
+            .hero h1 { font-size: 3rem; }
+            .section-number { font-size: 4rem; }
+            .strategy-grid { grid-template-columns: 1fr; }
             .two-column { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: 1fr; }
         }
 
-        .equation {
-            background: #f8fafc;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            border: 1px solid #e5e7eb;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--blood-red);
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>AI-Driven Vaccine Allocation for the 2025 Texas Measles Outbreak</h1>
-        <p class="subtitle">Comparing reinforcement learning against heuristic strategies using multi-county SEIR modeling</p>
-        <p class="meta">Matthew Kim | BIO 176: Disease Ecology | December 2025</p>
-    </div>
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
 
-    <div class="container">
-        <!-- Abstract -->
-        <div class="section">
-            <div class="abstract">
-                <strong>Abstract:</strong> I developed a multi-county SEIR (Susceptible-Exposed-Infectious-Recovered) model 
-                to evaluate vaccine allocation strategies during a simulated measles outbreak across 37 Texas counties. 
-                Model parameters were fitted to observed outbreak data using Poisson deviance minimization (Pseudo-R² = 0.659, 
-                RMSE = 2.71 cases/day). I compared four strategies: reinforcement learning (RL), uniform distribution, 
-                high-risk targeting, and no vaccination. For baseline simulations, the RL strategy reduced peak infections by 96.4% compared to no vaccination, 93.9% compared to uniform distribution, and 39.7% compared to high-risk targeting, while maintaining comparable total case counts.
-                Additional experiments on varying vaccine hesitancy, total vaccine budget, and daily vaccine supply showed reduction in peak infections by RL but also limitations in the strategy's effectiveness.
-                Overall, the results show that AI is not a catch-all solution, depending on the priorities of the vaccination program.
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="kicker">Texas 2025</div>
+            <h1>Could AI Have Saved Texas From Measles?</h1>
+            <p class="hero-subtitle">When a measles outbreak hits, every vaccine counts. I tested if artificial intelligence could outsmart traditional strategies.</p>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
+                <path d="M15 20 L20 15 L18.5 13.5 L15 17 L11.5 13.5 L10 15 Z"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section class="story-section">
+        <div class="narrow-container">
+            <div class="section-number">01</div>
+            <h2 class="section-title reveal">The Crisis</h2>
+            <p class="large-text reveal">In 2025, Texas faced a measles outbreak. The virus is one of the most contagious diseases known to humanity.</p>
+            <p class="body-text reveal">Measles has a basic reproduction number (R₀) between 12 and 18—meaning one infected person can infect up to 18 others in a completely susceptible population. For context, COVID-19's R₀ was around 2-3.</p>
+            
+            <div class="stats-grid reveal">
+                <div class="stat-card">
+                    <div class="stat-card-number">762</div>
+                    <div class="stat-card-label">Total Observed Cases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">37</div>
+                    <div class="stat-card-label">Counties Affected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">164</div>
+                    <div class="stat-card-label">Days of Outbreak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">414</div>
+                    <div class="stat-card-label">Cases in Gaines County</div>
+                </div>
+            </div>
+
+            <div class="big-stat reveal">
+                <div class="stat-number">14.0</div>
+                <div class="stat-label">R₀ Value (From My Fitted Model)</div>
             </div>
         </div>
+    </section>
 
-        <!-- Introduction -->
-        <div class="section">
-            <h2 class="section-title">1. Introduction</h2>
-            <div class="text-content">
-                <p>
-                    Measles remains one of the most contagious infectious diseases, with basic reproduction numbers 
-                    (R₀) ranging from 12-18 in unvaccinated populations. During outbreak responses, public health 
-                    authorities must allocate limited vaccine resources across heterogeneous populations while 
-                    accounting for spatial transmission dynamics, vaccine hesitancy, and logistical constraints.
-                </p>
-                <p>
-                    Traditional allocation strategies include uniform distribution (equal allocation per capita) and high-risk targeting (prioritizing areas with 
-                    active transmission). However, these static approaches may not adapt to rapidly evolving outbreak 
-                    dynamics. I propose a reinforcement learning (RL) framework that dynamically optimizes vaccine 
-                    allocation based on real-time epidemic surveillance.
-                </p>
-            </div>
-
-            <h3 class="section-subtitle">Study Context: Texas Outbreak Data</h3>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">762</div>
-                    <div class="stat-label">Total Observed Cases</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">37</div>
-                    <div class="stat-label">Counties Affected</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">164</div>
-                    <div class="stat-label">Days of Outbreak</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">414</div>
-                    <div class="stat-label">Cases in Highest-Burden County (Gaines)</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Methods -->
-        <div class="section">
-            <h2 class="section-title">2. Methods</h2>
+    <!-- Model Fitting -->
+    <section class="story-section pattern-bg">
+        <div class="container">
+            <div class="section-number">02</div>
+            <h2 class="section-title reveal">Fitting The Model</h2>
+            <p class="large-text reveal">I calibrated a single patch SEIR model to match the observed outbreak data.</p>
             
-            <h3 class="section-subtitle">2.1 Model Structure</h3>
-            <div class="text-content">
-                <p>
-                    I implemented a multi-county SEIR model with the following compartments:
-                </p>
-            </div>
-            
-            <div class="methodology-box">
-                <h3>SEIR Differential Equations</h3>
-                <div class="equation">
-                    dS/dt = -βSI/N - ν(t)<br>
-                    dE/dt = βSI/N - σE<br>
-                    dI/dt = σE - γI<br>
-                    dR/dt = γI + ν(t)
-                </div>
-                <ul>
-                    <li><strong>β</strong>: Transmission rate (fitted parameter)</li>
-                    <li><strong>σ</strong>: Progression rate from exposed to infectious (1/8 day⁻¹)</li>
-                    <li><strong>γ</strong>: Recovery rate (1/7 day⁻¹)</li>
-                    <li><strong>ν(t)</strong>: Vaccination rate (time-dependent, strategy-specific)</li>
-                    <li><strong>N</strong>: Total county population</li>
-                </ul>
-            </div>
-
-            <h3 class="section-subtitle">2.2 Parameter Estimation</h3>
-            <div class="text-content">
-                <p>
-                    Model parameters were estimated by fitting to observed daily case counts using Poisson deviance 
-                    as the objective function, appropriate for count data. I employed a grid search over initial 
-                    conditions combined with Nelder-Mead optimization.
-                </p>
-            </div>
-
-            <div class="chart-wrapper">
-                <div class="chart-container">
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Observed vs. Fitted Data</h3>
+                <div class="chart-wrapper">
                     <canvas id="validationChart"></canvas>
                 </div>
-                <div class="chart-caption">
-                    Figure 1: Model validation showing observed (points) versus fitted (lines) daily incidence and cumulative cases. 
-                    Click legend items to toggle between views. Poisson Deviance = 275.74, Pseudo-R² = 0.659, RMSE = 2.71 cases/day.
-                </div>
+                <p class="chart-caption">Model validation showing observed (points) versus fitted (lines) daily incidence. Pseudo-R² = 0.659, RMSE = 2.71 cases/day. <br> Click on the Legend items to see different data.</p>
             </div>
 
-            <div class="stats-grid">
+            <div class="stats-grid reveal">
                 <div class="stat-card">
-                    <div class="stat-number">2.00</div>
-                    <div class="stat-label">β (Transmission Rate)</div>
+                    <div class="stat-card-number">2.00</div>
+                    <div class="stat-card-label">β (Transmission Rate)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">14.0</div>
-                    <div class="stat-label">R₀ (Basic Reprod. Number)</div>
+                    <div class="stat-card-number">14.0</div>
+                    <div class="stat-card-label">R₀ (Basic Reprod. Number)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">0.659</div>
-                    <div class="stat-label">Pseudo-R²</div>
+                    <div class="stat-card-number">0.659</div>
+                    <div class="stat-card-label">Pseudo-R²</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">1.48</div>
-                    <div class="stat-label">Dispersion (φ)</div>
+                    <div class="stat-card-number">1.48</div>
+                    <div class="stat-card-label">Dispersion (φ)</div>
                 </div>
-            </div>
-
-            <h3 class="section-subtitle">2.3 Vaccination Strategies</h3>
-            <div class="text-content">
-                <p>I evaluated four vaccine allocation strategies:</p>
-            </div>
-
-            <div class="methodology-box">
-                <h3>Strategy Definitions</h3>
-                <ul>
-                    <li><strong>Reinforcement Learning (RL):</strong> Q-learning agent with state space defined by 
-                    top-3 highest-risk counties and budget status. Action space spans all possible allocations. 
-                    Reward function: R = (I_prev - I_current) × 100 - I_current + BudgetBonus, with ε-greedy exploration 
-                    (ε: 0.5 → 0.05, decay = 0.995).</li>
-                    
-                    <li><strong>Uniform Distribution:</strong> Vaccines allocated equally across all counties: 
-                    v_i = V_daily / n_counties.</li>
-                    
-                    <li><strong>High-Risk Targeting:</strong> Prioritizes counties by current infectious prevalence, 
-                    allocating up to 50% of susceptible population per county until supply exhausted.</li>
-                    
-                    <li><strong>No Vaccination (Control):</strong> Natural epidemic progression without intervention.</li>
-                </ul>
-            </div>
-
-            <h3 class="section-subtitle">2.4 Model Assumptions</h3>
-            <div class="methodology-box">
-                <ul>
-                    <li>Vaccine hesitancy: 15% baseline (random variation of 30%)</li>
-                    <li>Inter-county mobility: 0.2% daily mixing between counties with >10 cases</li>
-                    <li>Daily vaccine supply: 5,000 doses</li>
-                    <li>Simulation duration: 180 days</li>
-                    <li>Immediate vaccine effectiveness (single-dose)</li>
-                </ul>
             </div>
         </div>
+    </section>
 
-        <!-- Results -->
-        <div class="section">
-            <h2 class="section-title">3. Results</h2>
-
-            <h3 class="section-subtitle">3.1 Baseline Strategy Comparison</h3>
+    <!-- The Strategies -->
+    <section class="story-section">
+        <div class="container">
+            <div class="section-number">03</div>
+            <h2 class="section-title reveal">Four Strategies. One Winner?</h2>
+            <p class="large-text reveal">I pitted four vaccine allocation strategies against each other in a simulated Texas outbreak.</p>
             
-            <table class="comparison-table">
+            <div class="strategy-grid">
+                <div class="strategy-card winner reveal">
+                    <div class="strategy-name">🤖 RL Agent</div>
+                    <p class="body-text">A reinforcement learning algorithm using Q-Learning with ε-greedy exploration. It adapts based on the top-3 highest-risk counties and remaining budget, optimizing a reward function that prioritizes infection reduction: R = (I_prev - I_current) × 100 - I_current + BudgetBonus</p>
+                </div>
+                
+                <div class="strategy-card reveal">
+                    <div class="strategy-name">🎯 High-Risk Targeting</div>
+                    <p class="body-text">Focus resources where the outbreak burns hottest. Prioritizes counties with the most active infections, allocating up to 50% of susceptible population per county.</p>
+                </div>
+                
+                <div class="strategy-card reveal">
+                    <div class="strategy-name">⚖️ Uniform Distribution</div>
+                    <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v_i = V_daily / n_counties</p>
+                </div>
+                
+                <div class="strategy-card reveal">
+                    <div class="strategy-name">❌ No Vaccination</div>
+                    <p class="body-text">The baseline. What happens if we do nothing? ¯\_(ツ)_/¯</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Model -->
+    <section class="story-section pattern-bg">
+        <div class="narrow-container">
+            <div class="section-number">04</div>
+            <h2 class="section-title reveal">The Model</h2>
+            <p class="large-text reveal">I built a multi-county SEIR model that accounts for real-world complexity from the original fitted model. The fitted parameters were distributed across the counties.</p>
+            
+            <div class="equation-box reveal">
+                <div class="equation">
+                    dS<sub>i</sub>/dt = -λ<sub>i</sub>(t) × S<sub>i</sub> - v<sub>i</sub>(t)<br>
+                    dE<sub>i</sub>/dt = λ<sub>i</sub>(t) × S<sub>i</sub> - σE<sub>i</sub><br>
+                    dI<sub>i</sub>/dt = σE<sub>i</sub> - γI<sub>i</sub><br>
+                    dR<sub>i</sub>/dt = γI<sub>i</sub> + v<sub>i</sub>(t)
+                </div>
+            </div>
+
+            <p class="body-text reveal">Each county has its own dynamics, but they're not isolated. People travel between counties, spreading infection. The variable v<sub>i</sub>(t) is the effective vaccines allocated to county i at time t.</p>
+
+            <div class="callout reveal">
+                <h3 class="callout-title">Force of Infection</h3>
+                <p class="body-text" style="margin-bottom: 0;">For county i: λ<sub>i</sub> = β(I<sub>i</sub>/N<sub>i</sub>) + Σ<sub>j≠i</sub> m<sub>ij</sub>β(I<sub>j</sub>/N<sub>j</sub>)</p>
+                <p class="body-text" style="margin-top: 1rem; margin-bottom: 0;">This captures both local infections and the risk from connected counties. The mobility coupling constant (m<sub>ij</sub> = 0.002 for counties with &gt;10 cases).</p>
+            </div>
+
+            <p class="body-text reveal"><strong>Baseline assumptions:</strong> 15% vaccine hesitancy (varying by county), 0.2% daily inter-county mobility, 5,000 vaccine doses per day, immediate vaccine effectiveness, and a 180-day simulation.</p>
+        </div>
+    </section>
+
+    <!-- The Results -->
+    <section class="story-section">
+        <div class="container">
+            <div class="section-number">05</div>
+            <h2 class="section-title reveal">The Results Are In</h2>
+            
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Peak Infections by Strategy</h3>
+                <div class="chart-wrapper">
+                    <canvas id="peakChart"></canvas>
+                </div>
+                <p class="chart-caption">Lower is better. RL achieves dramatic reduction in peak infections.</p>
+            </div>
+
+            <p class="large-text reveal">RL wins... but High-Risk isn't far behind.</p>
+            
+            <table class="comparison-table reveal">
                 <thead>
                     <tr>
                         <th>Strategy</th>
                         <th>Peak Infections</th>
-                        <th>Days to Peak</th>
+                        <th>Peak Day</th>
                         <th>Total Cases</th>
                         <th>Vaccines Used</th>
-                        <th>Vaccine Efficiency (%)</th>
+                        <th>Vaccine Efficiency</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="highlight-row">
-                        <td><strong>RL</strong></td>
+                        <td><strong>RL Agent</strong></td>
                         <td>432</td>
                         <td>15</td>
                         <td>42,625</td>
@@ -474,264 +696,229 @@
                 </tbody>
             </table>
 
-            <div class="key-finding">
-                <h3>Key Finding</h3>
-                <p>
-                    The RL strategy achieved a 96.4% reduction in peak infections compared to no vaccination, 
-                    93.9% compared to uniform distribution, and 39.7% compared to high-risk targeting, despite similar total case counts and low vaccine efficiency. This dramatic 
-                    reduction in peak burden is critical for preventing healthcare system overwhelm.
-                </p>
+            <div class="callout reveal">
+                <h3 class="callout-title">Key Finding</h3>
+                <p class="body-text" style="margin-bottom: 0;">The RL strategy achieved a 96.4% reduction in peak infections compared to no vaccination, 93.9% compared to uniform distribution, and 39.7% compared to high-risk targeting. This dramatic reduction in peak burden is critical for preventing overwhelming the healthcare system.</p>
             </div>
+        </div>
+    </section>
 
-            <div class="chart-wrapper">
-                <div class="chart-container">
-                    <canvas id="peakComparisonChart"></canvas>
-                </div>
-                <div class="chart-caption">
-                    Figure 2: Peak infection comparison across vaccination strategies.
-                </div>
-            </div>
-
-            <h3 class="section-subtitle">3.2 SEIR Dynamics by Strategy</h3>
-            <div class="text-content">
-                <p>
-                    Full SEIR dynamics reveal distinct epidemic trajectories under each strategy. The RL approach 
-                    achieves rapid susceptible depletion through targeted allocation, while uniform distribution 
-                    shows delayed but substantial peak infections. High-risk targeting mirrors the dynamics of RL.
-                </p>
-            </div>
-
+    <!-- SEIR Dynamics -->
+    <section class="story-section pattern-bg">
+        <div class="container">
+            <div class="section-number">06</div>
+            <h2 class="section-title reveal">Full Epidemic Dynamics</h2>
+            <p class="large-text reveal">Each strategy produces distinct epidemic trajectories.</p>
+            
             <div class="two-column">
-                <div class="chart-wrapper">
-                    <div class="chart-container" style="height: 400px;">
+                <div class="chart-container reveal">
+                    <h3 class="chart-title" style="font-size: 1.5rem;">RL Strategy</h3>
+                    <div class="chart-wrapper" style="height: 400px;">
                         <canvas id="seirRL"></canvas>
                     </div>
-                    <div class="chart-caption">Figure 3A: RL Strategy SEIR dynamics</div>
                 </div>
-                <div class="chart-wrapper">
-                    <div class="chart-container" style="height: 400px;">
+                <div class="chart-container reveal">
+                    <h3 class="chart-title" style="font-size: 1.5rem;">Uniform Strategy</h3>
+                    <div class="chart-wrapper" style="height: 400px;">
                         <canvas id="seirUniform"></canvas>
                     </div>
-                    <div class="chart-caption">Figure 3B: Uniform Strategy SEIR dynamics</div>
                 </div>
             </div>
 
             <div class="two-column">
-                <div class="chart-wrapper">
-                    <div class="chart-container" style="height: 400px;">
+                <div class="chart-container reveal">
+                    <h3 class="chart-title" style="font-size: 1.5rem;">High-Risk Strategy</h3>
+                    <div class="chart-wrapper" style="height: 400px;">
                         <canvas id="seirHighRisk"></canvas>
                     </div>
-                    <div class="chart-caption">Figure 3C: High Risk Strategy SEIR dynamics</div>
                 </div>
-                <div class="chart-wrapper">
-                    <div class="chart-container" style="height: 400px;">
+                <div class="chart-container reveal">
+                    <h3 class="chart-title" style="font-size: 1.5rem;">No Vaccination</h3>
+                    <div class="chart-wrapper" style="height: 400px;">
                         <canvas id="seirNoVaccine"></canvas>
                     </div>
-                    <div class="chart-caption">Figure 3D: No Vaccination SEIR dynamics</div>
                 </div>
             </div>
+
+            <p class="body-text reveal" style="text-align: center;">The RL approach achieves rapid susceptible depletion through targeted allocation, while uniform distribution shows delayed but substantial peak infections.</p>
         </div>
+    </section>
 
-        <!-- Sensitivity Analyses -->
-        <div class="section">
-            <h2 class="section-title">4. Sensitivity Analyses</h2>
-
-            <h3 class="section-subtitle">4.1 Vaccine Hesitancy</h3>
-            <div class="text-content">
-                <p>
-                    I varied population-level vaccine hesitancy from 0% to 50% to assess strategy robustness. 
-                    All strategies degraded with increasing hesitancy, but RL maintained lowest peak infections 
-                    across all levels. At 50% hesitancy, RL peak infections increased to 1,951.
-                </p>
-            </div>
-
-            <div class="chart-wrapper">
-                <div class="chart-container">
-                    <canvas id="hesitancyInfectionsChart"></canvas>
-                </div>
-                <div class="chart-caption">
-                    Figure 4: Active infection trajectories under varying vaccine hesitancy levels (RL strategy only). 
-                    Hesitancy directly reduces effective vaccination rate by this formula: ν_eff = ν(t) × (1 - h).
+    <!-- The Twist -->
+    <section class="story-section">
+        <div class="narrow-container">
+            <div class="section-number">07</div>
+            <h2 class="section-title reveal">But There's a Catch</h2>
+            <p class="large-text reveal">RL is effective, but inefficient.</p>
+            
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Total Vaccines Used</h3>
+                <div class="chart-wrapper">
+                    <canvas id="vaccineUseChart"></canvas>
                 </div>
             </div>
 
-            <h3 class="section-subtitle">4.2 Total Vaccine Budget Constraints</h3>
-            <div class="text-content">
-                <p>
-                    Real-world vaccine programs face budget limitations. I tested total vaccine budgets from 
-                    200,000 to 1,200,000 doses. The RL strategy performed worse with lower budgets and had
-                    diminishing returns for larger budgets.
-                </p>
+            <p class="body-text reveal">While RL reduced infections slightly more than High-Risk targeting, it consumed far more vaccines to achieve that result. High-Risk achieved 84.6% vaccine efficiency compared to RL's 4.5%.</p>
+
+            <p class="body-text reveal">This raises an important question: <em>Is the marginal improvement worth the additional resource cost?</em></p>
+        </div>
+    </section>
+
+    <!-- Sensitivity Tests -->
+    <section class="story-section pattern-bg">
+        <div class="container">
+            <div class="section-number">08</div>
+            <h2 class="section-title reveal">Stress Testing the AI</h2>
+            <p class="large-text reveal">We pushed the model to its limits with three experiments.</p>
+            
+            <ul class="findings-list">
+                <li class="finding-item reveal">
+                    <div class="finding-number">01</div>
+                    <h3 class="callout-title">Vaccine Hesitancy</h3>
+                    <p class="body-text">Tested at 0%, 20%, 30%, and 50% hesitancy. RL remained best across all levels, but higher hesitancy created a tipping point where RL's advantage diminished and it became similar to High-Risk targeting.</p>
+                </li>
+                
+                <li class="finding-item reveal">
+                    <div class="finding-number">02</div>
+                    <h3 class="callout-title">Total Vaccine Budget</h3>
+                    <p class="body-text"><strong>RL performed poorly with limited budgets.</strong> At 200k vaccines, RL's peak infections (4,383) were actually worse than High-Risk (677). Larger budgets showed diminishing returns for RL.</p>
+                </li>
+                
+                <li class="finding-item reveal">
+                    <div class="finding-number">03</div>
+                    <h3 class="callout-title">Daily Vaccine Supply</h3>
+                    <p class="body-text">Tested at 0, 2,500, 5,000, and 10,000 doses per day. RL maintained the lowest infections across all supply levels, but high supply rates led to diminishing returns, with High-Risk achieving similar effectiveness.</p>
+                </li>
+            </ul>
+
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Vaccine Hesitancy Impact</h3>
+                <div class="chart-wrapper">
+                    <canvas id="hesitancyChart"></canvas>
+                </div>
+                <p class="chart-caption">Active infection trajectories under varying vaccine hesitancy levels (RL strategy). Hesitancy reduces effective vaccination: ν_eff = ν(t) × (1 - h)</p>
             </div>
 
-            <div class="chart-wrapper">
-                <div class="chart-container">
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Peak Infections vs. Total Vaccine Budget</h3>
+                <div class="chart-wrapper">
                     <canvas id="budgetPeakChart"></canvas>
                 </div>
-                <div class="chart-caption">
-                    Figure 5: Peak infections as a function of total vaccine budget. RL shows nonlinear improvement 
-                    with increasing budget while the uniform distribution shows marginal benefit. High-risk remains
-                    low throughout.
-                </div>
+                <p class="chart-caption">RL shows nonlinear improvement with increasing budget. Note RL's poor performance at 200k budget.</p>
             </div>
 
-            <div class="chart-wrapper">
-                <div class="chart-container">
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Budget Constraints on Infection Trajectory</h3>
+                <div class="chart-wrapper">
                     <canvas id="budgetInfectionsChart"></canvas>
                 </div>
-                <div class="chart-caption">
-                    Figure 6: Active infection trajectories under budget constraints (RL strategy).
-                </div>
+                <p class="chart-caption">Active infection curves under different total vaccine budgets (RL strategy only).</p>
             </div>
 
-            <h3 class="section-subtitle">4.3 Daily Vaccine Supply</h3>
-            <div class="text-content">
-                <p>
-                    I varied daily vaccine availability from 0 to 10,000 doses/day. Results demonstrate diminishing 
-                    returns above 5,000 doses/day for the RL strategy, suggesting an optimal supply rate exists 
-                    for this outbreak scenario.
-                </p>
-            </div>
-
-            <div class="chart-wrapper">
-                <div class="chart-container">
-                    <canvas id="supplyInfectionsChart"></canvas>
+            <div class="chart-container reveal">
+                <h3 class="chart-title">Daily Supply Rate Impact</h3>
+                <div class="chart-wrapper">
+                    <canvas id="supplyChart"></canvas>
                 </div>
-                <div class="chart-caption">
-                    Figure 7: Active infection trajectories under varying daily vaccine supply rates (RL strategy). 
-                </div>
+                <p class="chart-caption">Active infections under varying daily vaccine supply rates (RL strategy). Diminishing returns above 5,000 doses/day.</p>
             </div>
         </div>
+    </section>
 
-        <!-- Discussion -->
-        <div class="section">
-            <h2 class="section-title">5. Discussion</h2>
+    <!-- The Verdict -->
+    <section class="story-section">
+        <div class="narrow-container">
+            <div class="section-number">09</div>
+            <h2 class="section-title reveal">The Verdict</h2>
             
-            <h3 class="section-subtitle">5.1 Principal Findings</h3>
-            <div class="text-content">
-                <p>
-                    This study demonstrates that reinforcement learning can substantially improve vaccine allocation 
-                    during outbreak responses. The RL strategy's 96.4% reduction in peak infections compared to no 
-                    intervention, and 93.9% compared to uniform distribution, has profound implications for healthcare 
-                    capacity planning during epidemics.
-                </p>
-                <p>
-                    Critically, while total case counts remained similar across strategies (~42,600), the temporal 
-                    distribution differed dramatically. Flattening the epidemic curve, even without reducing total 
-                    cases, prevents healthcare system collapse and reduces mortality. It is also important to note
-                    the competitive performance by high-risk targeting, showing how depending on the limitations
-                    and priorities of the vaccination program, standard heuristic strategies may suffice.
-                </p>
+            <div class="big-stat reveal">
+                <div class="stat-number" style="font-size: clamp(3rem, 8vw, 8rem);">Maybe</div>
+                <div class="stat-label">Could AI Have Saved Texas?</div>
             </div>
 
-            <h3 class="section-subtitle">5.2 Mechanism of RL Advantage</h3>
-            <div class="text-content">
-                <p>
-                    The RL agent's performance stems from three factors:
-                </p>
-            </div>
-            <div class="methodology-box">
-                <ul>
-                    <li><strong>Dynamic Adaptation:</strong> RL continuously updates allocation based on current 
-                    epidemic state, while traditional strategies remain static.</li>
-                    
-                    <li><strong>Multi-County Coordination:</strong> RL implicitly learns inter-county transmission 
-                    patterns through experience, allocating vaccines to prevent spillover.</li>
-                    
-                    <li><strong>Resource Optimization:</strong> Under constraints, RL can prioritize 
-                    highest-impact allocations through learned Q-values.</li>
-                </ul>
+            <p class="large-text reveal">AI can significantly reduce measles spread, even with substantial limitations—but it's not a silver bullet.</p>
+
+            <div class="callout reveal">
+                <h3 class="callout-title">Key Takeaways</h3>
+                <div class="body-text">
+                    <p>✓ RL does significantly reduce measles spread, even under challenging conditions</p>
+                    <p>✓ RL tends to achieve the lowest peak infections across scenarios</p>
+                    <p>✗ RL uses vaccines inefficiently compared to High-Risk targeting (4.5% vs 84.6% efficiency)</p>
+                    <p>✗ With limited total budgets, RL actually performs worse than simpler strategies</p>
+                    <p>⚠️ High-Risk targeting often achieves nearly equivalent results with far less complexity</p>
+                </div>
             </div>
 
-            <h3 class="section-subtitle">5.3 Limitations</h3>
-            <div class="text-content">
-                <p>
-                    Several limitations warrant consideration:
-                </p>
-            </div>
-            <div class="methodology-box">
-                <ul>
-                    <li>Model assumes homogeneous mixing within counties while real-world transmission networks 
-                    are more complex.</li>
-                    
-                    <li>Vaccine hesitancy modeled as constant proportion whereas actual hesitancy varies by demographics, 
-                    messaging, and trust.</li>
-                    
-                    <li>RL agent trained and tested on same outbreak scenario with generalization to other pathogens 
-                    or geographic contexts requiring validation.</li>
-                    
-                    <li>Computational cost of RL training may limit real-time deployment during actual outbreaks.</li>
-                    
-                    <li>Model excludes age structure, second-dose requirements, and other factors.</li>
-                </ul>
-            </div>
+            <p class="large-text reveal">The answer depends on your priorities.</p>
+            <p class="body-text reveal">If minimizing peak infections is paramount and resources are abundant, RL shines. But if you're working with limited vaccines or care about efficiency, a well-designed heuristic like High-Risk targeting may be the better choice.</p>
 
-            <h3 class="section-subtitle">5.4 Public Health Implications</h3>
-            <div class="text-content">
-                <p>
-                    The high-risk targeting strategy achieved 84.6% vaccine efficiency (effective vaccines / 
-                    total used) compared to RL's 4.6%, yet had higher peak infections. This paradox highlights 
-                    that <em>peak suppression</em> and <em>vaccine efficiency</em> represent different objectives. 
-                    When hospital capacity is the limiting factor, RL's approach is preferable despite lower 
-                    technical efficiency.
-                </p>
-                <p>
-                    The RL framework could be integrated into real-time epidemic surveillance systems, providing 
-                    decision support for resource allocation. However, ethical considerations around algorithmic 
-                    decision-making in public health require careful deliberation.
-                </p>
-            </div>
+            <p class="body-text reveal">When hospital capacity is the limiting factor, RL's peak suppression approach is preferable despite lower technical efficiency. But the computational cost and training requirements may limit real-time deployment during actual outbreaks.</p>
+
+            <p class="large-text reveal" style="margin-top: 3rem;">AI is not a catch-all solution. It depends on the priorities of the vaccination program and the limitations at play.</p>
         </div>
+    </section>
 
-        <!-- Conclusions -->
-        <div class="section">
-            <h2 class="section-title">6. Conclusions</h2>
-            <div class="text-content">
-                <p>
-                    Reinforcement learning offers a promising approach to vaccine allocation during outbreak 
-                    responses, achieving dramatic reductions in peak infections compared to traditional strategies. 
-                    The method did tend to result in the lowest peak infections, but the performance by high-risk targeting
-                    should heuristic strategies are still valuable. AI is not a catch-all solution. The optimal allocation
-                    depends on the priorities of the vaccination program and the limitations at play.
-                </p>
-                <p>
-                    Future work should build upon these findings using additional outbreak data, demographic 
-                    heterogeneity, and other RL algorithms suitable for real-time 
-                    deployment. As disease ecology advances, AI-driven resource allocation may become 
-                    a critical component of pandemic preparedness and response.
-                </p>
-            </div>
-
-            <div class="key-finding">
-                <h3>Summary</h3>
-                <p>
-                    <strong>Primary Outcome:</strong> RL reduced peak infections by 96.4% vs. no vaccination<br>
-                    <strong>Model Fit:</strong> Pseudo-R² = 0.659, RMSE = 2.71 cases/day<br>
-                    <strong>Robustness:</strong>Generally achieved lowest peak infections for all experiments and simultations<br>
-                    <strong>Trade-off:</strong> Lower vaccine efficiency (4.6%) than high-risk targeting (85.5%), 
-                    but lower peak infections
-                </p>
-            </div>
+    <!-- Methodology Note -->
+    <section class="story-section pattern-bg">
+        <div class="narrow-container">
+            <p class="body-text reveal" style="text-align: center; font-style: italic;">
+                This analysis is based on multi-county SEIR modeling and reinforcement learning simulations calibrated to measles epidemiology. Model parameters were fitted using Poisson deviance minimization (Pseudo-R² = 0.659, RMSE = 2.71 cases/day). The RL agent uses Q-learning with ε-greedy exploration, training on outbreak dynamics over 180 days.
+            </p>
+            <p class="body-text reveal" style="text-align: center; font-style: italic; margin-top: 2rem;">
+                For full methodology and technical details, visit this <a href="https://docs.google.com/presentation/d/1ha9UUDUwtG_ZGeaFXT8ejc4gUUxzhr-7BDN0nJvQjls/edit?usp=sharing" style="color: var(--blood-red); text-decoration: none;">slideshow</a>.
+            </p>
         </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <h3>About This Research</h3>
-            <p style="max-width: 800px; margin: 1rem auto;">
-                This analysis was conducted as part of my final project for BIO 176: Disease Ecology.
-            </p>
-            <p style="margin-top: 2rem; opacity: 0.7; font-size: 0.9rem;">
-                © 2025 | Matthew Kim
-            </p>
-        </div>
+        <div class="author-credit">Matthew Kim | BIO 176: Disease Ecology</div>
+        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">
+            AI-Driven Vaccine Allocation for the 2025 Texas Measles Outbreak<br>
+            <a href="https://texasmeaslesai.github.io">texasmeaslesai.github.io</a>
+        </p>
+        <p style="margin-top: 3rem; font-size: 0.85rem; opacity: 0.5;">
+            <strong>References:</strong> Bjørnstad, O. N., Finkenstädt, B. F., & Grenfell, B. T. (2002). Dynamics of Measles Epidemics. <em>Ecological Monographs</em>.
+             | Bubar, K. M., et al. (2021). Model-informed COVID-19 vaccine prioritization strategies by age and serostatus. <em>Science</em>.
+              | Guerra, F. M., et al. (2017). The basic reproduction number (R0) of measles. <em>The Lancet. Infectious Diseases</em>.
+               | Kusmawati, I. S., & Chandra, T. D. (2021). Stability analysis of SIRS epidemic model on measles disease spreading with vaccination and migration. <em>Journal of Physics: Conference Series</em>. | Ling, L., et al. (2024). Cooperating Graph Neural Networks With Deep Reinforcement Learning for Vaccine Prioritization. <em>IEEE Journal of Biomedical and Health Informatics</em>. | Song, B., et al. (2023). Robust COVID-19 vaccination control in a multi-city dynamic transmission network: A novel reinforcement learning-based approach. <em>Journal of Network and Computer Applications</em>.
+        </p>
     </footer>
 
     <script>
-        // Actual observed data from epi curve
-        const observedDaily = [2,0,2,3,2,0,1,2,0,1,4,5,7,6,5,5,2,2,2,5,5,7,10,10,3,10,5,5,0,7,10,16,7,11,12,7,7,5,12,7,7,15,8,8,15,9,13,8,7,8,9,4,13,8,9,14,12,11,17,17,3,7,13,9,10,16,5,8,7,12,12,13,8,4,4,14,11,4,6,9,11,6,7,10,3,2,7,8,6,11,6,7,1,2,2,5,4,1,4,4,4,7,1,0,0,1,1,2,2,0,1,2,3,0,0,2,1,1,0,0,1,8,0,0,1,0,0,2,1,0,0,0,0,0,1,2,1,0,0,0,0,1,0,0,0,0,1,2,0,0,0,0,1,0,0,1,0,1,2,1,0,0,0,1];
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
 
+        // Reveal on Scroll
+        const reveals = document.querySelectorAll('.reveal');
+        
+        const revealOnScroll = () => {
+            reveals.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // Initial check
+
+        // Chart.js Configurations
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 13;
+        
+        // Days array
+        const days180 = Array.from({length: 180}, (_, i) => i);
+        
+        const observedDaily = [2,0,2,3,2,0,1,2,0,1,4,5,7,6,5,5,2,2,2,5,5,7,10,10,3,10,5,5,0,7,10,16,7,11,12,7,7,5,12,7,7,15,8,8,15,9,13,8,7,8,9,4,13,8,9,14,12,11,17,17,3,7,13,9,10,16,5,8,7,12,12,13,8,4,4,14,11,4,6,9,11,6,7,10,3,2,7,8,6,11,6,7,1,2,2,5,4,1,4,4,4,7,1,0,0,1,1,2,2,0,1,2,3,0,0,2,1,1,0,0,1,8,0,0,1,0,0,2,1,0,0,0,0,0,1,2,1,0,0,0,0,1,0,0,0,0,1,2,0,0,0,0,1,0,0,1,0,1,2,1,0,0,0,1];
+        
         const predictedDaily = [
 0.8003492771480745, 1.8638893562227985, 2.642963402169291, 3.226599454080145,
 3.675877694294832, 4.032836653729656, 4.326467748680302, 4.576785559548762,
@@ -775,6 +962,11 @@
 0.43023477637351804, 0.41334273416313544, 0.39710103372354416, 0.381485646430026,
 0.3664733515952008, 0.35204171579057353, 0.33816907212968783
 ];
+
+        // Cumulative calculations
+        const observedCum = observedDaily.reduce((acc, val, i) => [...acc, (acc[i-1] || 0) + val], []);
+        const predictedCum = predictedDaily.reduce((acc, val, i) => [...acc, (acc[i-1] || 0) + val], []);
+
         const highRiskS = [
 42465.0, 38123.49997439837, 33798.72362576949, 29462.02118381862, 25101.32505055822,
 20686.78135330207, 16200.397743731077, 11695.45032977041, 7199.61160761791, 3903.0947511489794,
@@ -2139,64 +2331,46 @@
 2.848463827392037e-07, 2.493827228150494e-07
 ];
 
-        // Calculate cumulative cases
-        function cumsum(arr) {
-            return arr.reduce((acc, val, i) => {
-                acc.push(i === 0 ? val : acc[i-1] + val);
-                return acc;
-            }, []);
-        }
-
-        const observedCum = cumsum(observedDaily);
-        const predictedCum = cumsum(predictedDaily);
-        const days = Array.from({length: observedDaily.length}, (_, i) => i);
-
-        // Validation Chart
+        // Validation Chart (Observed vs Predicted)
         const validationCtx = document.getElementById('validationChart').getContext('2d');
         new Chart(validationCtx, {
-            type: 'line',
+            type: 'scatter',
             data: {
-                labels: days,
                 datasets: [
                     {
-                        label: 'Observed Daily Cases',
-                        data: observedDaily,
+                        label: 'Observed Daily',
+                        data: observedDaily.map((val, i) => ({x: i, y: val})),
+                        backgroundColor: 'rgba(220, 38, 38, 0.6)',
                         borderColor: 'rgba(220, 38, 38, 1)',
-                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        pointRadius: 3,
-                        pointBackgroundColor: 'rgba(220, 38, 38, 1)',
-                        borderWidth: 2,
-                        yAxisID: 'y'
+                        pointRadius: 4
                     },
                     {
-                        label: 'Model Fit Daily',
-                        data: predictedDaily,
-                        borderColor: 'rgba(37, 99, 235, 1)',
-                        backgroundColor: 'rgba(37, 99, 235, 0)',
-                        borderWidth: 3,
-                        borderDash: [8, 4],
+                        label: 'Fitted Daily',
+                        data: predictedDaily.map((val, i) => ({x: i, y: val})),
+                        type: 'line',
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        borderWidth: 2,
                         pointRadius: 0,
-                        yAxisID: 'y'
+                        fill: false
                     },
                     {
                         label: 'Observed Cumulative',
-                        data: observedCum,
+                        data: observedCum.map((val, i) => ({x: i, y: val})),
+                        backgroundColor: 'rgba(234, 88, 12, 0.6)',
                         borderColor: 'rgba(234, 88, 12, 1)',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        pointRadius: 2,
-                        borderWidth: 2,
-                        yAxisID: 'y1',
+                        pointRadius: 4,
                         hidden: true
                     },
                     {
-                        label: 'Model Fit Cumulative',
-                        data: predictedCum,
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        backgroundColor: 'rgba(16, 185, 129, 0)',
-                        borderWidth: 3,
-                        borderDash: [8, 4],
+                        label: 'Fitted Cumulative',
+                        data: predictedCum.map((val, i) => ({x: i, y: val})),
+                        type: 'line',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
                         pointRadius: 0,
-                        yAxisID: 'y1',
+                        fill: false,
                         hidden: true
                     }
                 ]
@@ -2204,404 +2378,56 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Model Validation: Observed vs. Fitted Data',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
-                    legend: {
+                    legend: { 
                         position: 'top',
                         onClick: function(e, legendItem, legend) {
                             const index = legendItem.datasetIndex;
                             const chart = legend.chart;
                             const meta = chart.getDatasetMeta(index);
-                            
-                            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-                            
-                            // Toggle paired dataset
-                            if (index < 2) {
-                                const pairedIndex = index + 2;
-                                chart.getDatasetMeta(pairedIndex).hidden = !meta.hidden;
-                            } else {
-                                const pairedIndex = index - 2;
-                                chart.getDatasetMeta(pairedIndex).hidden = !meta.hidden;
-                            }
-                            
+                            meta.hidden = !meta.hidden;
                             chart.update();
                         }
                     },
                     tooltip: {
-                        callbacks: {
-                            title: function(context) {
-                                return 'Day ' + context[0].label;
-                            }
-                        }
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12
                     }
                 },
                 scales: {
-                    x: { 
-                        title: { display: true, text: 'Days Since Outbreak Start', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    x: {
+                        title: { display: true, text: 'Days', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
                     y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Daily New Cases', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: { display: true, text: 'Cumulative Cases', font: { size: 12 } },
-                        grid: { drawOnChartArea: false }
+                        title: { display: true, text: 'Cases', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        beginAtZero: true
                     }
                 }
             }
         });
 
-        // Create SEIR charts for each strategy
-        function createSEIRCharthighRisk(canvasId, title, scenario, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const days = Array.from({length: 180}, (_, i) => i);
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        {
-                            label: 'Susceptible (S)',
-                            data: highRiskS,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Exposed (E)',
-                            data: highRiskE,
-                            borderColor: 'rgba(251, 191, 36, 1)',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Infectious (I)',
-                            data: highRiskI,
-                            borderColor: 'rgba(248, 113, 113, 1)',
-                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Recovered (R)',
-                            data: highRiskR,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: title,
-                            font: { size: 14, weight: 'bold', family: 'system-ui' },
-                            color: '#1e3a8a'
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: { font: { size: 11 } }
-                        }
-                    },
-                    scales: {
-                        x: { 
-                            title: { display: true, text: 'Days', font: { size: 11 } },
-                            grid: { color: '#e5e7eb' }
-                        },
-                        y: { 
-                            title: { display: true, text: 'Population', font: { size: 11 } },
-                            beginAtZero: true,
-                            grid: { color: '#e5e7eb' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createSEIRChartrl(canvasId, title, scenario, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const days = Array.from({length: 180}, (_, i) => i);
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        {
-                            label: 'Susceptible (S)',
-                            data: rlS,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Exposed (E)',
-                            data: rlE,
-                            borderColor: 'rgba(251, 191, 36, 1)',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Infectious (I)',
-                            data: rlI,
-                            borderColor: 'rgba(248, 113, 113, 1)',
-                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Recovered (R)',
-                            data: rlR,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: title,
-                            font: { size: 14, weight: 'bold', family: 'system-ui' },
-                            color: '#1e3a8a'
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: { font: { size: 11 } }
-                        }
-                    },
-                    scales: {
-                        x: { 
-                            title: { display: true, text: 'Days', font: { size: 11 } },
-                            grid: { color: '#e5e7eb' }
-                        },
-                        y: { 
-                            title: { display: true, text: 'Population', font: { size: 11 } },
-                            beginAtZero: true,
-                            grid: { color: '#e5e7eb' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createSEIRChartuniform(canvasId, title, scenario, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const days = Array.from({length: 180}, (_, i) => i);
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        {
-                            label: 'Susceptible (S)',
-                            data: uniformS,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Exposed (E)',
-                            data: uniformE,
-                            borderColor: 'rgba(251, 191, 36, 1)',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Infectious (I)',
-                            data: uniformI,
-                            borderColor: 'rgba(248, 113, 113, 1)',
-                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Recovered (R)',
-                            data: uniformR,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: title,
-                            font: { size: 14, weight: 'bold', family: 'system-ui' },
-                            color: '#1e3a8a'
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: { font: { size: 11 } }
-                        }
-                    },
-                    scales: {
-                        x: { 
-                            title: { display: true, text: 'Days', font: { size: 11 } },
-                            grid: { color: '#e5e7eb' }
-                        },
-                        y: { 
-                            title: { display: true, text: 'Population', font: { size: 11 } },
-                            beginAtZero: true,
-                            grid: { color: '#e5e7eb' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createSEIRChartnoVaccine(canvasId, title, scenario, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const days = Array.from({length: 180}, (_, i) => i);
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        {
-                            label: 'Susceptible (S)',
-                            data: noVaccineS,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Exposed (E)',
-                            data: noVaccineE,
-                            borderColor: 'rgba(251, 191, 36, 1)',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Infectious (I)',
-                            data: noVaccineI,
-                            borderColor: 'rgba(248, 113, 113, 1)',
-                            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Recovered (R)',
-                            data: noVaccineR,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: title,
-                            font: { size: 14, weight: 'bold', family: 'system-ui' },
-                            color: '#1e3a8a'
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: { font: { size: 11 } }
-                        }
-                    },
-                    scales: {
-                        x: { 
-                            title: { display: true, text: 'Days', font: { size: 11 } },
-                            grid: { color: '#e5e7eb' }
-                        },
-                        y: { 
-                            title: { display: true, text: 'Population', font: { size: 11 } },
-                            beginAtZero: true,
-                            grid: { color: '#e5e7eb' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Baseline strategies SEIR
-        createSEIRChartrl('seirRL', 'RL Strategy', 'rl', 'rgba(30, 58, 138, 1)');
-        createSEIRChartuniform('seirUniform', 'Uniform Distribution', 'uniform', 'rgba(234, 88, 12, 1)');
-        createSEIRCharthighRisk('seirHighRisk', 'High-Risk Targeting', 'highRisk', 'rgba(22, 163, 74, 1)');
-        createSEIRChartnoVaccine('seirNoVaccine', 'No Vaccination (Control)', 'noVaccine', 'rgba(220, 38, 38, 1)');
-
-        // Peak Comparison Chart
-        const peakCtx = document.getElementById('peakComparisonChart').getContext('2d');
+        // Peak Infections Chart
+        const peakCtx = document.getElementById('peakChart').getContext('2d');
         new Chart(peakCtx, {
             type: 'bar',
             data: {
-                labels: ['RL', 'High Risk', 'Uniform', 'No Vaccine'],
+                labels: ['RL Agent', 'High-Risk', 'Uniform', 'No Vaccination'],
                 datasets: [{
                     label: 'Peak Infections',
                     data: [432, 717, 7114, 13414],
                     backgroundColor: [
-                        'rgba(30, 58, 138, 0.8)',
-                        'rgba(22, 163, 74, 0.8)',
+                        'rgba(220, 38, 38, 0.8)',
                         'rgba(234, 88, 12, 0.8)',
-                        'rgba(220, 38, 38, 0.8)'
+                        'rgba(30, 58, 138, 0.8)',
+                        'rgba(115, 115, 115, 0.8)'
                     ],
                     borderColor: [
-                        'rgba(30, 58, 138, 1)',
-                        'rgba(22, 163, 74, 1)',
+                        'rgba(220, 38, 38, 1)',
                         'rgba(234, 88, 12, 1)',
-                        'rgba(220, 38, 38, 1)'
+                        'rgba(30, 58, 138, 1)',
+                        'rgba(115, 115, 115, 1)'
                     ],
                     borderWidth: 2
                 }]
@@ -2610,19 +2436,17 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Peak Infections by Vaccination Strategy',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12
+                    }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Peak Infections', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                        title: { display: true, text: 'Peak Infections', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
                     x: {
                         grid: { display: false }
@@ -2631,18 +2455,145 @@
             }
         });
 
-        // Hesitancy Infections Chart - showing infection curves at different hesitancy levels
-        const hesitancyInfectionsCtx = document.getElementById('hesitancyInfectionsChart').getContext('2d');
-        const hesitancyConfigs = {
-            h0: { peak: 450, peakDay: 15, width: 8 },
-            h20: { peak: 600, peakDay: 17, width: 10 },
-            h30: { peak: 800, peakDay: 19, width: 12 },
-            h50: { peak: 1400, peakDay: 22, width: 15 }
-        };
+        // SEIR Charts for each strategy
+        function createSEIRChart(canvasId, sData, eData, iData, rData, title) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days180,
+                    datasets: [
+                        {
+                            label: 'Susceptible',
+                            data: sData,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true
+                        },
+                        {
+                            label: 'Exposed',
+                            data: eData,
+                            borderColor: 'rgba(234, 88, 12, 1)',
+                            backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true
+                        },
+                        {
+                            label: 'Infectious',
+                            data: iData,
+                            borderColor: 'rgba(220, 38, 38, 1)',
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true
+                        },
+                        {
+                            label: 'Recovered',
+                            data: (Array.isArray(rData) && rData.length > 0) ? rData : Array(180).fill(0),
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            hidden: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            display: true
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Days' },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Population' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
 
-        const days180 = Array.from({length: 180}, (_, i) => i);
+        // Create SEIR charts with all data
+        createSEIRChart('seirRL', rlS, rlE, rlI, rlR, 'RL Strategy');
+        createSEIRChart('seirUniform', uniformS, uniformE, uniformI, uniformR, 'Uniform');
+        createSEIRChart('seirHighRisk', highRiskS, highRiskE, highRiskI, highRiskR, 'High-Risk');
+        createSEIRChart('seirNoVaccine', noVaccineS, noVaccineE, noVaccineI, noVaccineR, 'No Vaccine');
 
-        new Chart(hesitancyInfectionsCtx, {
+        // Vaccine Use Chart
+        const vaccineUseCtx = document.getElementById('vaccineUseChart').getContext('2d');
+        new Chart(vaccineUseCtx, {
+            type: 'bar',
+            data: {
+                labels: ['RL Agent', 'High-Risk', 'Uniform'],
+                datasets: [{
+                    label: 'Total Vaccines Used',
+                    data: [908310, 47706, 899100],
+                    backgroundColor: [
+                        'rgba(220, 38, 38, 0.8)',
+                        'rgba(234, 88, 12, 0.8)',
+                        'rgba(30, 58, 138, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(220, 38, 38, 1)',
+                        'rgba(234, 88, 12, 1)',
+                        'rgba(30, 58, 138, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString() + ' vaccines';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Total Vaccines Used', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: {
+                            callback: function(value) {
+                                return (value / 1000) + 'k';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Hesitancy Chart
+        const hesitancyCtx = document.getElementById('hesitancyChart').getContext('2d');
+        new Chart(hesitancyCtx, {
             type: 'line',
             data: {
                 labels: days180,
@@ -2650,10 +2601,10 @@
                     {
                         label: '0% Hesitancy',
                         data: hes0,
-                        borderColor: 'rgba(30, 58, 138, 1)',
-                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
-                        tension: 0.4,
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2661,8 +2612,8 @@
                         data: hes2,
                         borderColor: 'rgba(59, 130, 246, 1)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2670,8 +2621,8 @@
                         data: hes3,
                         borderColor: 'rgba(234, 88, 12, 1)',
                         backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2679,8 +2630,8 @@
                         data: hes5,
                         borderColor: 'rgba(220, 38, 38, 1)',
                         backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     }
                 ]
@@ -2689,22 +2640,17 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Active Infections Under Varying Vaccine Hesitancy (RL Strategy)',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
                     legend: { position: 'top' }
                 },
                 scales: {
-                    x: { 
-                        title: { display: true, text: 'Days', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    x: {
+                        title: { display: true, text: 'Days', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
-                    y: { 
-                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    y: {
+                        title: { display: true, text: 'Active Infections', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        beginAtZero: true
                     }
                 }
             }
@@ -2715,37 +2661,37 @@
         new Chart(budgetPeakCtx, {
             type: 'line',
             data: {
-                labels: ['200k', '450k', '700k', '900k', '1,200k'],
+                labels: ['200k', '450k', '700k', '900k'],
                 datasets: [
                     {
                         label: 'RL',
-                        data: [4383, 902, 496, 514, 511],
-                        borderColor: 'rgba(30, 58, 138, 1)',
-                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
-                        tension: 0.3,
+                        data: [4383, 902, 496, 514],
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
                         borderWidth: 3,
                         pointRadius: 6,
-                        pointHoverRadius: 8
+                        pointHoverRadius: 8,
+                        fill: true
+                    },
+                    {
+                        label: 'High-Risk',
+                        data: [677, 703, 682, 705],
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true
                     },
                     {
                         label: 'Uniform',
-                        data: [7175, 7075, 7109, 7087, 7030],
-                        borderColor: 'rgba(234, 88, 12, 1)',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.3,
+                        data: [7175, 7075, 7109, 7087],
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
                         borderWidth: 3,
                         pointRadius: 6,
-                        pointHoverRadius: 8
-                    },
-                    {
-                        label: 'High Risk',
-                        data: [677, 703, 682, 705, 670],
-                        borderColor: 'rgba(22, 163, 74, 1)',
-                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                        tension: 0.3,
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
+                        pointHoverRadius: 8,
+                        fill: true
                     }
                 ]
             },
@@ -2753,22 +2699,17 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Peak Infections vs. Total Vaccine Budget',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
                     legend: { position: 'top' }
                 },
                 scales: {
-                    x: { 
-                        title: { display: true, text: 'Total Vaccine Budget', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    x: {
+                        title: { display: true, text: 'Total Vaccine Budget', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
-                    y: { 
-                        title: { display: true, text: 'Peak Infections', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    y: {
+                        title: { display: true, text: 'Peak Infections', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        beginAtZero: true
                     }
                 }
             }
@@ -2776,13 +2717,6 @@
 
         // Budget Infections Chart
         const budgetInfectionsCtx = document.getElementById('budgetInfectionsChart').getContext('2d');
-        const budgetConfigs = {
-            b200k: { peak: 4400, peakDay: 23, width: 16 },
-            b450k: { peak: 800, peakDay: 18, width: 11 },
-            b700k: { peak: 600, peakDay: 16, width: 9 },
-            b900k: { peak: 478, peakDay: 16, width: 8 }
-        };
-
         new Chart(budgetInfectionsCtx, {
             type: 'line',
             data: {
@@ -2793,8 +2727,8 @@
                         data: bud200,
                         borderColor: 'rgba(220, 38, 38, 1)',
                         backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2802,8 +2736,8 @@
                         data: bud450,
                         borderColor: 'rgba(234, 88, 12, 1)',
                         backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2811,8 +2745,8 @@
                         data: bud700,
                         borderColor: 'rgba(59, 130, 246, 1)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2820,8 +2754,8 @@
                         data: bud900,
                         borderColor: 'rgba(30, 58, 138, 1)',
                         backgroundColor: 'rgba(30, 58, 138, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     }
                 ]
@@ -2830,37 +2764,25 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Active Infections Under Budget Constraints (RL Strategy)',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
                     legend: { position: 'top' }
                 },
                 scales: {
-                    x: { 
-                        title: { display: true, text: 'Days', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    x: {
+                        title: { display: true, text: 'Days', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
-                    y: { 
-                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    y: {
+                        title: { display: true, text: 'Active Infections', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        beginAtZero: true
                     }
                 }
             }
         });
 
-        // Supply Infections Chart
-        const supplyInfectionsCtx = document.getElementById('supplyInfectionsChart').getContext('2d');
-        const supplyConfigs = {
-            s0: { peak: 13414, peakDay: 26, width: 20 },
-            s2500: { peak: 2000, peakDay: 20, width: 13 },
-            s5000: { peak: 478, peakDay: 16, width: 8 },
-            s10000: { peak: 250, peakDay: 14, width: 6 }
-        };
-
-        new Chart(supplyInfectionsCtx, {
+        // Supply Chart
+        const supplyCtx = document.getElementById('supplyChart').getContext('2d');
+        new Chart(supplyCtx, {
             type: 'line',
             data: {
                 labels: days180,
@@ -2870,8 +2792,8 @@
                         data: vac0,
                         borderColor: 'rgba(220, 38, 38, 1)',
                         backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2879,8 +2801,8 @@
                         data: vac2500,
                         borderColor: 'rgba(234, 88, 12, 1)',
                         backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2888,8 +2810,8 @@
                         data: vac5000,
                         borderColor: 'rgba(59, 130, 246, 1)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     },
                     {
@@ -2897,8 +2819,8 @@
                         data: vac10000,
                         borderColor: 'rgba(30, 58, 138, 1)',
                         backgroundColor: 'rgba(30, 58, 138, 0.1)',
-                        tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 0,
                         fill: true
                     }
                 ]
@@ -2907,25 +2829,21 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Active Infections Under Varying Daily Vaccine Supply (RL Strategy)',
-                        font: { size: 16, weight: 'bold', family: 'system-ui' },
-                        color: '#1e3a8a'
-                    },
                     legend: { position: 'top' }
                 },
                 scales: {
-                    x: { 
-                        title: { display: true, text: 'Days', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    x: {
+                        title: { display: true, text: 'Days', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
-                    y: { 
-                        title: { display: true, text: 'Active Infections', font: { size: 12 } },
-                        grid: { color: '#e5e7eb' }
+                    y: {
+                        title: { display: true, text: 'Active Infections', font: { size: 14, weight: '600' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        beginAtZero: true
                     }
                 }
             }
         });
     </script>
 </body>
+</html>
