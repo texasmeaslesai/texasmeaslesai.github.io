@@ -251,6 +251,10 @@
             letter-spacing: 0.5px;
         }
 
+        .no-transform {
+            text-transform: none;
+        }
+
         /* Chart Styles */
         .chart-container {
             background: white;
@@ -525,7 +529,10 @@
                     <div class="stat-card-number">164</div>
                     <div class="stat-card-label">Days of Outbreak</div>
                 </div>
-                <div class="stat-card">
+            </div>
+
+            <div class="reveal" style="display: flex; justify-content: center; margin: 3rem 0;">
+                <div class="stat-card" style="max-width: 300px;">
                     <div class="stat-card-number">414</div>
                     <div class="stat-card-label">Cases in Gaines County</div>
                 </div>
@@ -556,7 +563,7 @@
             <div class="stats-grid reveal">
                 <div class="stat-card">
                     <div class="stat-card-number">2.00</div>
-                    <div class="stat-card-label">β (Transmission Rate)</div>
+                    <div class="stat-card-label"><span class="no-transform">β</span> (Transmission Rate)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-number">14.0</div>
@@ -584,7 +591,7 @@
             <div class="strategy-grid">
                 <div class="strategy-card winner reveal">
                     <div class="strategy-name">🤖 RL Agent</div>
-                    <p class="body-text">A reinforcement learning algorithm using Q-Learning with ε-greedy exploration. It adapts based on the top-3 highest-risk counties and remaining budget, optimizing a reward function that prioritizes infection reduction: R = (I_prev - I_current) × 100 - I_current + BudgetBonus</p>
+                    <p class="body-text">A reinforcement learning algorithm using Q-Learning with ε-greedy exploration. It adapts based on the top-3 highest-risk counties and remaining budget, optimizing a reward function that prioritizes infection reduction: R = (I<sub>prev</sub> - I<sub>current</sub>) × 100 - I<sub>current</sub> + BudgetBonus</p>
                 </div>
                 
                 <div class="strategy-card reveal">
@@ -594,14 +601,17 @@
                 
                 <div class="strategy-card reveal">
                     <div class="strategy-name">⚖️ Uniform Distribution</div>
-                    <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v_i = V_daily / n_counties</p>
-                </div>
-                
-                <div class="strategy-card reveal">
-                    <div class="strategy-name">❌ No Vaccination</div>
-                    <p class="body-text">The baseline. What happens if we do nothing? ¯\_(ツ)_/¯</p>
+                    <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v<sub>i</sub> = V<sub>daily</sub> / n<sub>counties</sub></p>
                 </div>
             </div>
+
+            <div class="reveal" style="display: flex; justify-content: center; margin: 3rem 0;">
+                <div class="strategy-card" style="max-width: 400px;">
+                    <div class="strategy-name">❌ No Vaccination</div>
+                    <p class="body-text">The baseline. What happens if we do nothing?</p>
+                </div>
+            </div>
+            
         </div>
     </section>
 
@@ -749,7 +759,7 @@
         <div class="narrow-container">
             <div class="section-number">07</div>
             <h2 class="section-title reveal">But There's a Catch</h2>
-            <p class="large-text reveal">RL is effective, but inefficient.</p>
+            <p class="large-text reveal">RL is effective but inefficient.</p>
             
             <div class="chart-container reveal">
                 <h3 class="chart-title">Total Vaccines Used</h3>
