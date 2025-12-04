@@ -468,11 +468,229 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .section-number { font-size: 4rem; }
-            .strategy-grid { grid-template-columns: 1fr; }
-            .two-column { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .hero { 
+                min-height: 100vh;
+                padding: 1rem;
+            }
+            
+            .hero-content {
+                padding: 1rem;
+            }
+            
+            .kicker {
+                font-size: 0.75rem;
+                letter-spacing: 0.2em;
+            }
+            
+            .hero h1 { 
+                font-size: clamp(2rem, 10vw, 3rem);
+                margin-bottom: 1rem;
+            }
+            
+            .hero-subtitle {
+                font-size: clamp(1rem, 4vw, 1.2rem);
+            }
+            
+            .scroll-indicator {
+                bottom: 1.5rem;
+            }
+            
+            .story-section {
+                padding: 4rem 1rem;
+                min-height: auto;
+            }
+            
+            .section-number { 
+                font-size: clamp(3rem, 15vw, 4rem);
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .section-title {
+                font-size: clamp(1.75rem, 7vw, 2.5rem);
+                margin-bottom: 1.5rem;
+            }
+            
+            .section-title::after {
+                width: 60px;
+                height: 4px;
+            }
+            
+            .large-text {
+                font-size: clamp(1.25rem, 5vw, 1.5rem);
+                margin-bottom: 1.5rem;
+            }
+            
+            .body-text {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+            
+            .big-stat {
+                padding: 2rem 0;
+            }
+            
+            .stat-number {
+                font-size: clamp(3rem, 15vw, 4rem);
+            }
+            
+            .stat-label {
+                font-size: 1rem;
+                margin-top: 0.75rem;
+            }
+            
+            .stats-grid { 
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+            
+            .stat-card {
+                padding: 1.5rem;
+            }
+            
+            .stat-card-number {
+                font-size: 2.5rem;
+            }
+            
+            .stat-card-label {
+                font-size: 0.85rem;
+            }
+            
+            .chart-container {
+                padding: 1.5rem;
+                margin: 2rem 0;
+            }
+            
+            .chart-wrapper {
+                height: 300px;
+            }
+            
+            .chart-title {
+                font-size: 1.5rem;
+            }
+            
+            .chart-caption {
+                font-size: 0.85rem;
+                margin-top: 1rem;
+            }
+            
+            .strategy-grid { 
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+            
+            .strategy-card {
+                padding: 1.5rem;
+            }
+            
+            .strategy-name {
+                font-size: 1.5rem;
+            }
+            
+            .two-column { 
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+            
+            .callout {
+                padding: 1.5rem;
+                margin: 2rem 0;
+            }
+            
+            .callout-title {
+                font-size: 1.5rem;
+            }
+            
+            .equation-box {
+                padding: 1.5rem;
+                margin: 2rem 0;
+                font-size: 0.9rem;
+            }
+            
+            .equation {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            
+            .findings-list {
+                margin: 2rem 0;
+            }
+            
+            .finding-item {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .finding-number {
+                font-size: 2rem;
+            }
+            
+            .comparison-table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.8rem;
+            }
+            
+            footer {
+                padding: 3rem 1rem 2rem;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: clamp(1.75rem, 12vw, 2.5rem);
+            }
+            
+            .section-number {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
+            }
+        }
+        
+        /* Prevent horizontal scroll */
+        * {
+            max-width: 100%;
+        }
+        
+        .chart-container,
+        .equation-box,
+        .comparison-table {
+            overflow-x: auto;
+        }
+        
+        /* Single card width matching - responsive */
+        .single-card-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 3rem 0;
+        }
+        
+        .single-card-wrapper .stat-card,
+        .single-card-wrapper .strategy-card {
+            width: calc((100% - 4rem) / 3);
+        }
+        
+        @media (max-width: 768px) {
+            .single-card-wrapper .stat-card,
+            .single-card-wrapper .strategy-card {
+                width: 100%;
+            }
         }
 
         /* Custom Scrollbar */
@@ -531,8 +749,8 @@
                 </div>
             </div>
 
-            <div class="reveal" style="display: flex; justify-content: center; margin: 3rem 0;">
-                <div class="stat-card" style="width: calc((100% - 4rem) / 3);">
+            <div class="reveal single-card-wrapper">
+                <div class="stat-card">
                     <div class="stat-card-number">414</div>
                     <div class="stat-card-label">Cases in Gaines County</div>
                 </div>
@@ -604,14 +822,12 @@
                     <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v<sub>i</sub> = v<sub>daily</sub> / n<sub>counties</sub></p>
                 </div>
             </div>
-
-            <div class="reveal" style="display: flex; justify-content: center; margin: 3rem 0;">
-                <div class="strategy-card" style="width: calc((100% - 4rem) / 3);">
+            <div class="reveal single-card-wrapper">
+                <div class="strategy-card">
                     <div class="strategy-name">❌ No Vaccination</div>
                     <p class="body-text">The baseline. What happens if we do nothing?</p>
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -846,7 +1062,7 @@
                 <div class="stat-label">Could AI Have Saved Texas?</div>
             </div>
 
-            <p class="large-text reveal">AI can significantly reduce measles spread, even with substantial limitations, but it's not a silver bullet</p>
+            <p class="large-text reveal">AI can significantly reduce measles spread, even with substantial limitations, but it's not a silver bullet.</p>
 
             <div class="callout reveal">
                 <h3 class="callout-title">Key Takeaways</h3>
