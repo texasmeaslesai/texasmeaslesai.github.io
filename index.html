@@ -226,6 +226,26 @@
             gap: 2rem;
             margin: 3rem 0;
         }
+        
+        /* 4-column grid for specific sections */
+        .stats-grid-4col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .stats-grid-4col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid-4col {
+                grid-template-columns: 1fr;
+            }
+        }
 
         .stat-card {
             background: white;
@@ -545,6 +565,12 @@
                 margin: 2rem 0;
             }
             
+            .stats-grid-4col {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+            
             .stat-card {
                 padding: 1.5rem;
             }
@@ -674,22 +700,14 @@
             overflow-x: auto;
         }
         
-        /* Single card width matching - responsive */
-        .single-card-wrapper {
-            display: flex;
-            justify-content: center;
-            margin: 3rem 0;
-        }
-        
-        .single-card-wrapper .stat-card,
-        .single-card-wrapper .strategy-card {
-            width: calc((100% - 4rem) / 3);
+        /* Single centered card in grid */
+        .single-centered-card {
+            grid-column: 2 / 3;
         }
         
         @media (max-width: 768px) {
-            .single-card-wrapper .stat-card,
-            .single-card-wrapper .strategy-card {
-                width: 100%;
+            .single-centered-card {
+                grid-column: auto;
             }
         }
 
@@ -734,7 +752,7 @@
             <p class="large-text reveal">In 2025, Texas faced a measles outbreak. The virus is one of the most contagious diseases known to humanity.</p>
             <p class="body-text reveal">Measles has a basic reproduction number (R₀) between 12 and 18, meaning one infected person can infect up to 18 others in a completely susceptible population. For context, SARS-CoV-2's original R₀ was around 2.5-4.</p>
             
-            <div class="stats-grid reveal">
+            <div class="stats-grid-4col reveal">
                 <div class="stat-card">
                     <div class="stat-card-number">762</div>
                     <div class="stat-card-label">Total Observed Cases</div>
@@ -747,9 +765,6 @@
                     <div class="stat-card-number">164</div>
                     <div class="stat-card-label">Days of Outbreak</div>
                 </div>
-            </div>
-
-            <div class="reveal single-card-wrapper">
                 <div class="stat-card">
                     <div class="stat-card-number">414</div>
                     <div class="stat-card-label">Cases in Gaines County</div>
@@ -778,7 +793,7 @@
                 <p class="chart-caption">Model validation showing observed (points) versus fitted (lines) daily incidence. Pseudo-R² = 0.659, RMSE = 2.71 cases/day. <br> Click on the Legend items to see select data.</p>
             </div>
 
-            <div class="stats-grid reveal">
+            <div class="stats-grid-4col reveal">
                 <div class="stat-card">
                     <div class="stat-card-number">2.00</div>
                     <div class="stat-card-label"><span class="no-transform">β</span> (Transmission Rate)</div>
@@ -821,9 +836,8 @@
                     <div class="strategy-name">⚖️ Uniform Distribution</div>
                     <p class="body-text">The "fair" approach. Vaccines distributed equally across all counties, regardless of outbreak severity: v<sub>i</sub> = v<sub>daily</sub> / n<sub>counties</sub></p>
                 </div>
-            </div>
-            <div class="reveal single-card-wrapper">
-                <div class="strategy-card">
+                
+                <div class="strategy-card reveal single-centered-card">
                     <div class="strategy-name">❌ No Vaccination</div>
                     <p class="body-text">The baseline. What happens if we do nothing?</p>
                 </div>
@@ -1139,12 +1153,18 @@
         // Chart.js Configurations
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.font.size = 13;
+
+        // ============================================================
+        // DATA ARRAYS - PASTE YOUR DATA FROM THE ORIGINAL HTML HERE
+        // ============================================================
         
         // Days array
         const days180 = Array.from({length: 180}, (_, i) => i);
         
+        // TODO: Copy observedDaily array from your original HTML (line ~733)
         const observedDaily = [2,0,2,3,2,0,1,2,0,1,4,5,7,6,5,5,2,2,2,5,5,7,10,10,3,10,5,5,0,7,10,16,7,11,12,7,7,5,12,7,7,15,8,8,15,9,13,8,7,8,9,4,13,8,9,14,12,11,17,17,3,7,13,9,10,16,5,8,7,12,12,13,8,4,4,14,11,4,6,9,11,6,7,10,3,2,7,8,6,11,6,7,1,2,2,5,4,1,4,4,4,7,1,0,0,1,1,2,2,0,1,2,3,0,0,2,1,1,0,0,1,8,0,0,1,0,0,2,1,0,0,0,0,0,1,2,1,0,0,0,0,1,0,0,0,0,1,2,0,0,0,0,1,0,0,1,0,1,2,1,0,0,0,1];
         
+        // TODO: Copy predictedDaily array from your original HTML (line ~735)
         const predictedDaily = [
 0.8003492771480745, 1.8638893562227985, 2.642963402169291, 3.226599454080145,
 3.675877694294832, 4.032836653729656, 4.326467748680302, 4.576785559548762,
@@ -2556,6 +2576,10 @@
 4.244352579595414e-07, 3.716065604644061e-07, 3.253492059061903e-07,
 2.848463827392037e-07, 2.493827228150494e-07
 ];
+        
+        // ============================================================
+        // END OF DATA ARRAYS SECTION
+        // ============================================================
 
         // Validation Chart (Observed vs Predicted)
         const validationCtx = document.getElementById('validationChart').getContext('2d');
